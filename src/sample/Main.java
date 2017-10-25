@@ -24,7 +24,11 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent addCustomerView = FXMLLoader.load(getClass().getResource("../add_customer/addCustomer.fxml"));
+
+        boolean data = DataHelper.createAllTables();
+        System.out.println("All tables Created" + data);
+
+        Parent addCustomerView = FXMLLoader.load(getClass().getResource("../add_product/addProduct.fxml"));
         primaryStage.setTitle("eShopkeeper");
 
         MenuBar menuBar = this.getMenubar();
@@ -45,7 +49,7 @@ public class Main extends Application {
         launch(args);
     }
 
-    public MenuBar getMenubar(){
+    private MenuBar getMenubar(){
         MenuBar menuBar = new MenuBar();
 
         Menu views = new Menu("Views");
