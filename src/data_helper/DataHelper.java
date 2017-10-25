@@ -80,5 +80,55 @@ public class DataHelper {
             return false;
         }
     }
+
+    public static boolean createProductTable() {
+        StringBuilder query = new StringBuilder();
+        query.append("CREATE TABLE IF NOT EXISTS product ( ");
+        query.append("'id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ");
+        query.append("'name' TEXT NOT NULL, ");
+        query.append("'code' TEXT, ");
+        query.append("'consumer_rate' DOUBLE NOT NULL, ");
+        query.append("'holesale_rate' DOUBLE NOT NULL, ");
+        query.append("'company' TEXT )");
+
+        System.out.println(query.toString());
+
+        try {
+            Connection conn = getConnection();
+            PreparedStatement prp = conn.prepareStatement(query.toString());
+            prp.execute();
+
+            conn.close();
+            return true;
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean insertProduct(String name, String code, Double consumer_rate, Double holesale_rate, String company){
+        String query = "INSERT INTO product ( name, code, consumer_rate, holesale_rate, company) VALUES (?,?,?,?,?)";
+
+        try {
+            Connection conn = getConnection();
+            PreparedStatement prep = conn.prepareStatement(query);
+            prep.setString(1, name);
+            prep.setString(2, code);
+            prep.setDouble(3, consumer_rate);
+            prep.setDouble(4, holesale_rate);
+            prep.setString(5, company);
+            prep.execute();
+
+            conn.close();
+            return true;
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean createAllTables(){
+        return creatCustomerTable() && createProductTable();
+    }
 }
 
