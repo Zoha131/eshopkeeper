@@ -37,7 +37,15 @@ public class AddCustomerController {
 
         add_btn.setOnAction(event -> {
             Boolean add =  DataHelper.insertCustomer(nametext.getText(), adrstxt.getText(), phntext.getText(), emailtxt.getText(), typebox.getValue());
+            if(add){
+                nametext.clear();
+                adrstxt.clear();
+                phntext.clear();
+                emailtxt.clear();
+            }
         });
+
+        //todo-me need to add email checker in form
 
     }
 }
