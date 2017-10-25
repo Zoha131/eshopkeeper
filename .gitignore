@@ -1,0 +1,7 @@
+
+.gitignore
+.idea/
+**.ini
+eshopkeeper.db
+eshopkeeper.iml
+out/
