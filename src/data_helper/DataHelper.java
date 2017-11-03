@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 
 public class DataHelper {
 
-    //Customer Table Columns
+    //Supplier Table Columns
     private static final String CUS_ID = "id";
     private static final String CUS_NAME = "name";
     private static final String CUS_ADDRESS = "address";
@@ -99,12 +99,23 @@ public class DataHelper {
     public static boolean createProductTable() {
         StringBuilder query = new StringBuilder();
         query.append("CREATE TABLE IF NOT EXISTS product ( ");
-        query.append("'id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ");
-        query.append("'name' TEXT NOT NULL, ");
-        query.append("'code' TEXT, ");
-        query.append("'consumer_rate' DOUBLE NOT NULL, ");
-        query.append("'holesale_rate' DOUBLE NOT NULL, ");
-        query.append("'company' TEXT )");
+        query.append(Product.id);
+        query.append(" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ");
+        query.append(Product.name);
+        query.append(" TEXT NOT NULL, ");
+        query.append(Product.code);
+        query.append(" TEXT, ");
+        query.append(Product.company);
+        query.append(" TEXT NOT NULL, ");
+        query.append(Product.prate);
+        query.append(" DOUBLE DEFAULT 0.00, ");
+        query.append(Product.wrate);
+        query.append(" DOUBLE NOT NULL, ");
+        query.append(Product.rrate);
+        query.append(" DOUBLE NOT NULL, ");
+        query.append(Product.stock);
+        query.append(" DOUBLE NOT NULL ) ");
+
 
         try {
             Connection conn = getConnection();
@@ -119,17 +130,24 @@ public class DataHelper {
         }
     }
 
-    public static boolean insertProduct(String name, String code, Double consumer_rate, Double holesale_rate, String company){
-        String query = "INSERT INTO product ( name, code, consumer_rate, holesale_rate, company) VALUES (?,?,?,?,?)";
+    public static boolean insertProduct(String name, String code, String company,
+                                        double prate, double wrate, double rrate, double stock ){
+        //String query = "INSERT INTO product ( name, code, consumer_rate, holesale_rate, company) VALUES (?,?,?,?,?)";
+        String query =
+                String.format("INSERT INTO product ( %s, %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?,?)",
+                        Product.name, Product.code, Product.company, Product.prate,
+                        Product.wrate, Product.rrate, Product.stock);
 
         try {
             Connection conn = getConnection();
             PreparedStatement prep = conn.prepareStatement(query);
             prep.setString(1, name);
             prep.setString(2, code);
-            prep.setDouble(3, consumer_rate);
-            prep.setDouble(4, holesale_rate);
-            prep.setString(5, company);
+            prep.setString(3, company);
+            prep.setDouble(4, prate);
+            prep.setDouble(5, wrate);
+            prep.setDouble(6, rrate);
+            prep.setDouble(7, stock);
             prep.execute();
 
             conn.close();
@@ -143,16 +161,29 @@ public class DataHelper {
     public static boolean createAllTables(){
         return creatCustomerTable() && createProductTable();
     }
+
+    public static enum Customer{
+        id,
+        name,
+        phone,
+        address,
+        email,
+        type,
+        store,
+        due
+    }
+    public static enum Product{
+        id,
+        name,
+        code,
+        company,
+        prate,
+        wrate,
+        rrate,
+        stock
+
+    }
 }
 
-enum Customer{
-    id,
-    name,
-    phone,
-    address,
-    email,
-    type,
-    store,
-    due
-}
+
 

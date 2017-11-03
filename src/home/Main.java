@@ -57,7 +57,7 @@ public class Main extends Application {
         MenuBar menuBar = new MenuBar();
 
         Menu views = new Menu("Views");
-        MenuItem add_customer = new MenuItem("Add Customer");
+        MenuItem add_customer = new MenuItem("Add Supplier");
         MenuItem add_product = new MenuItem("Add Product");
         views.getItems().addAll(add_customer,add_product);
 

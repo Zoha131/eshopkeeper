@@ -1,15 +1,13 @@
-package add.customer;
+package add.supplier;
 
 import data_helper.DataHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 
-public class Customer {
+public class Supplier {
     @FXML TextField nametext,phntext,emailtxt, strtxt, duetxt;
     @FXML ChoiceBox<String> typebox;
     @FXML TextArea adrstxt;
