@@ -1,16 +1,12 @@
-package add_customer;
+package add.customer;
 
 import data_helper.DataHelper;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
-import javafx.geometry.HPos;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 
 
-public class AddCustomerController {
+public class Customer {
     @FXML
     TextField nametext,phntext,emailtxt;
     @FXML

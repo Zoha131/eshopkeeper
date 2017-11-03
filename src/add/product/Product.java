@@ -1,4 +1,4 @@
-package add_product;
+package add.product;
 
 import data_helper.DataHelper;
 import javafx.beans.binding.Bindings;
@@ -7,7 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
 
-public class AddProductController {
+public class Product {
     @FXML
     TextField nametxt, codetxt, cratetxt, hratetxt, companytxt;
     @FXML

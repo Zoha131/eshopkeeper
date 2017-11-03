@@ -11,8 +11,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-import java.sql.Connection;
-
 public class Main extends Application {
 
     private static BorderPane root = new BorderPane();
@@ -28,7 +26,7 @@ public class Main extends Application {
         boolean data = DataHelper.createAllTables();
         System.out.println("All tables Created" + data);
 
-        Parent addCustomerView = FXMLLoader.load(getClass().getResource("../add_product/addProduct.fxml"));
+        Parent addCustomerView = FXMLLoader.load(getClass().getResource("../add/product/product.fxml"));
         primaryStage.setTitle("eShopkeeper");
 
         MenuBar menuBar = this.getMenubar();
