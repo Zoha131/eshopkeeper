@@ -31,18 +31,22 @@ public class DataHelper {
     public static boolean creatCustomerTable(){
         StringBuilder query = new StringBuilder();
         query.append("CREATE TABLE IF NOT EXISTS customer ( ");
-        query.append(CUS_ID);
+        query.append(Customer.id);
         query.append(" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ");
-        query.append(CUS_NAME);
+        query.append(Customer.name);
         query.append(" TEXT NOT NULL, ");
-        query.append(CUS_ADDRESS);
+        query.append(Customer.store);
         query.append(" TEXT, ");
-        query.append(CUS_PHONE);
+        query.append(Customer.address);
+        query.append(" TEXT, ");
+        query.append(Customer.phone);
         query.append(" TEXT NOT NULL, ");
-        query.append(CUS_EMAIL);
+        query.append(Customer.email);
         query.append(" TEXT, ");
-        query.append(CUS_TYPE);
-        query.append(" TEXT NOT NULL )");
+        query.append(Customer.type);
+        query.append(" TEXT NOT NULL, ");
+        query.append(Customer.due);
+        query.append(" REAL NOT NULL DEFAULT 0.00 ) ");
 
         try{
             Connection conn = getConnection();
@@ -58,18 +62,29 @@ public class DataHelper {
         }
     }
 
-    public static boolean insertCustomer(String name, String address, String phone, String email, String type){
+    public static boolean insertCustomer(String name, String address, String phone,
+                                         String email, String type, String store, double due){
 
         String query = "INSERT INTO customer ( name, address, phone, email, type) VALUES (?,?,?,?,?)";
+        String query1 = String.format("INSERT INTO customer ( %s, %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?,?)",
+                Customer.name,
+                Customer.address,
+                Customer.phone,
+                Customer.email,
+                Customer.type,
+                Customer.store,
+                Customer.due);
 
         try {
             Connection conn = getConnection();
-            PreparedStatement prep = conn.prepareStatement(query);
+            PreparedStatement prep = conn.prepareStatement(query1);
             prep.setString(1, name);
             prep.setString(2, address);
             prep.setString(3, phone);
             prep.setString(4, email);
             prep.setString(5, type);
+            prep.setString(6, store);
+            prep.setDouble(7, due);
             prep.execute();
 
             prep.close();
@@ -90,8 +105,6 @@ public class DataHelper {
         query.append("'consumer_rate' DOUBLE NOT NULL, ");
         query.append("'holesale_rate' DOUBLE NOT NULL, ");
         query.append("'company' TEXT )");
-
-        System.out.println(query.toString());
 
         try {
             Connection conn = getConnection();
@@ -130,5 +143,16 @@ public class DataHelper {
     public static boolean createAllTables(){
         return creatCustomerTable() && createProductTable();
     }
+}
+
+enum Customer{
+    id,
+    name,
+    phone,
+    address,
+    email,
+    type,
+    store,
+    due
 }
 

@@ -1,13 +1,13 @@
-package sample;
+package home;
 
 import data_helper.DataHelper;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -24,20 +24,26 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
 
         boolean data = DataHelper.createAllTables();
-        System.out.println("All tables Created" + data);
 
-        Parent addCustomerView = FXMLLoader.load(getClass().getResource("../add/product/product.fxml"));
-        primaryStage.setTitle("eShopkeeper");
+        TabPane addCustomerView = FXMLLoader.load(getClass().getResource("../add/add.fxml"));
+
 
         MenuBar menuBar = this.getMenubar();
         root.setTop(menuBar);
         root.setCenter(addCustomerView);
 
+        addCustomerView.prefWidthProperty().bind(root.widthProperty());
+        addCustomerView.prefHeightProperty().bind(root.heightProperty().subtract(30));
+
+
         root.setMinWidth(1000);
         root.setMinHeight(600);
+        primaryStage.setMinWidth(1030);
+        primaryStage.setMinHeight(640);
 
         System.out.println(DataHelper.creatCustomerTable());
 
+        primaryStage.setTitle("eShopkeeper");
         primaryStage.setScene(new Scene(root, 1000, 600));
         primaryStage.show();
     }
@@ -60,6 +66,7 @@ public class Main extends Application {
         help.getItems().addAll(about);
 
         menuBar.getMenus().addAll(views,help);
+        menuBar.setPrefHeight(30);
 
 
         return menuBar;

@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="add.Add"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<TabPane fx:id="addTab" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121" fx:controller="add.Add" xmlns:fx="http://javafx.com/fxml/1">
+  <tabs>
+    <Tab text="Product">
+      <content>
+        <fx:include source="product/product.fxml" />
+      </content>
+    </Tab>
+    <Tab text="Customer">
+      <content>
+        <fx:include source="customer/customer.fxml" />
+      </content>
+    </Tab>
+  </tabs>
+</TabPane>
