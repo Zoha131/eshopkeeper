@@ -17,8 +17,6 @@ public class Customer {
     @FXML Label strlbl;
 
     public void initialize(){
-        System.out.println("Add customer worked");
-
         typebox.getItems().addAll(CusType.WholeSale.toString(), CusType.Retailer.toString());
         typebox.setValue(CusType.Retailer.toString());
 
@@ -48,6 +46,7 @@ public class Customer {
                 emailtxt.clear();
                 strtxt.clear();
                 duetxt.clear();
+                typebox.setValue(CusType.Retailer.toString());
                 nametext.requestFocus();
             }
         });

@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
-
 public class Product {
     @FXML
     TextField nametxt, codetxt, companytxt, pratetxt, wratetxt, rratetxt, stocktxt;
@@ -14,6 +13,13 @@ public class Product {
     Button addbtn;
 
     public void initialize(){
+        
+//   tried to add validation rules
+//        nametxt.textProperty().addListener((observable, oldValue, newValue) -> {
+//            System.out.println("oldvalue: "+oldValue);
+//            System.out.println("newValue "+newValue);
+//            nametxt.setStyle("-fx-text-box-border: red ; -fx-focus-color: red ;");
+//        });
 
 
         addbtn.disableProperty().bind(

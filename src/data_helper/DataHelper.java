@@ -6,14 +6,6 @@ import java.sql.PreparedStatement;
 
 public class DataHelper {
 
-    //Supplier Table Columns
-    private static final String CUS_ID = "id";
-    private static final String CUS_NAME = "name";
-    private static final String CUS_ADDRESS = "address";
-    private static final String CUS_PHONE = "phone";
-    private static final String CUS_EMAIL = "email";
-    private static final String CUS_TYPE = "type";
-
     private static Connection conn;
 
 
@@ -96,6 +88,71 @@ public class DataHelper {
         }
     }
 
+
+    public static boolean creatSupplierTable(){
+        StringBuilder query = new StringBuilder();
+        query.append("CREATE TABLE IF NOT EXISTS supplier ( ");
+        query.append(Supplier.id);
+        query.append(" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ");
+        query.append(Supplier.name);
+        query.append(" TEXT NOT NULL, ");
+        query.append(Supplier.store);
+        query.append(" TEXT NOT NULL, ");
+        query.append(Supplier.address);
+        query.append(" TEXT, ");
+        query.append(Supplier.phone);
+        query.append(" TEXT NOT NULL, ");
+        query.append(Supplier.email);
+        query.append(" TEXT, ");
+        query.append(Supplier.due);
+        query.append(" REAL NOT NULL DEFAULT 0.00 ) ");
+
+        try{
+            Connection conn = getConnection();
+            PreparedStatement prp = conn.prepareStatement(query.toString());
+            prp.execute();
+
+            prp.close();
+            conn.close();
+            return true;
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+
+    public static boolean insertSupplier(String name, String store, String address, String phone,
+                                         String email, double due){
+
+        String query1 = String.format("INSERT INTO supplier ( %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?)",
+                Supplier.name,
+                Supplier.store,
+                Supplier.address,
+                Supplier.phone,
+                Supplier.email,
+                Supplier.due);
+
+        try {
+            Connection conn = getConnection();
+            PreparedStatement prep = conn.prepareStatement(query1);
+            prep.setString(1, name);
+            prep.setString(2, store);
+            prep.setString(3, address);
+            prep.setString(4, phone);
+            prep.setString(5, email);
+            prep.setDouble(6, due);
+            prep.execute();
+
+            prep.close();
+            conn.close();
+            return true;
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
     public static boolean createProductTable() {
         StringBuilder query = new StringBuilder();
         query.append("CREATE TABLE IF NOT EXISTS product ( ");
@@ -159,7 +216,9 @@ public class DataHelper {
     }
 
     public static boolean createAllTables(){
-        return creatCustomerTable() && createProductTable();
+        return creatCustomerTable() &&
+                createProductTable() &&
+                creatSupplierTable();
     }
 
     public static enum Customer{
@@ -182,6 +241,15 @@ public class DataHelper {
         rrate,
         stock
 
+    }
+    public static enum Supplier{
+        id,
+        name,
+        phone,
+        address,
+        email,
+        store,
+        due
     }
 }
 

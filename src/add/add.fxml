@@ -15,5 +15,10 @@
         <fx:include source="customer/customer.fxml" />
       </content>
     </Tab>
+    <Tab text="Supplier">
+      <content>
+        <fx:include source="supplier/supplier.fxml" />
+      </content>
+    </Tab>
   </tabs>
 </TabPane>

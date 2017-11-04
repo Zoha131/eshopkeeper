@@ -14,14 +14,20 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     private static BorderPane root = new BorderPane();
+    private static Stage mainStage;
 
     public static BorderPane getRoot(){
         return Main.root;
+    }
+    public static Stage getMainStage(){
+        return mainStage;
     }
 
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+
+        mainStage = primaryStage;
 
         boolean data = DataHelper.createAllTables();
 
