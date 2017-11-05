@@ -22,7 +22,7 @@ public class DataHelper {
 
     public static boolean creatCustomerTable(){
         StringBuilder query = new StringBuilder();
-        query.append("CREATE TABLE IF NOT EXISTS customer ( ");
+        query.append("CREATE TABLE IF NOT EXISTS Customer ( ");
         query.append(Customer.id);
         query.append(" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ");
         query.append(Customer.name);
@@ -57,8 +57,8 @@ public class DataHelper {
     public static boolean insertCustomer(String name, String address, String phone,
                                          String email, String type, String store, double due){
 
-        String query = "INSERT INTO customer ( name, address, phone, email, type) VALUES (?,?,?,?,?)";
-        String query1 = String.format("INSERT INTO customer ( %s, %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?,?)",
+        String query = "INSERT INTO Customer ( name, address, phone, email, type) VALUES (?,?,?,?,?)";
+        String query1 = String.format("INSERT INTO Customer ( %s, %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?,?)",
                 Customer.name,
                 Customer.address,
                 Customer.phone,
@@ -91,7 +91,7 @@ public class DataHelper {
 
     public static boolean creatSupplierTable(){
         StringBuilder query = new StringBuilder();
-        query.append("CREATE TABLE IF NOT EXISTS supplier ( ");
+        query.append("CREATE TABLE IF NOT EXISTS Supplier ( ");
         query.append(Supplier.id);
         query.append(" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ");
         query.append(Supplier.name);
@@ -125,7 +125,7 @@ public class DataHelper {
     public static boolean insertSupplier(String name, String store, String address, String phone,
                                          String email, double due){
 
-        String query1 = String.format("INSERT INTO supplier ( %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?)",
+        String query1 = String.format("INSERT INTO Supplier ( %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?)",
                 Supplier.name,
                 Supplier.store,
                 Supplier.address,
@@ -155,7 +155,7 @@ public class DataHelper {
 
     public static boolean createProductTable() {
         StringBuilder query = new StringBuilder();
-        query.append("CREATE TABLE IF NOT EXISTS product ( ");
+        query.append("CREATE TABLE IF NOT EXISTS Product ( ");
         query.append(Product.id);
         query.append(" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ");
         query.append(Product.name);
@@ -171,7 +171,7 @@ public class DataHelper {
         query.append(Product.rrate);
         query.append(" DOUBLE NOT NULL, ");
         query.append(Product.stock);
-        query.append(" DOUBLE NOT NULL ) ");
+        query.append(" INTEGER NOT NULL ) ");
 
 
         try {
@@ -188,10 +188,10 @@ public class DataHelper {
     }
 
     public static boolean insertProduct(String name, String code, String company,
-                                        double prate, double wrate, double rrate, double stock ){
-        //String query = "INSERT INTO product ( name, code, consumer_rate, holesale_rate, company) VALUES (?,?,?,?,?)";
+                                        double prate, double wrate, double rrate, int stock ){
+        //String query = "INSERT INTO Product ( name, code, consumer_rate, holesale_rate, company) VALUES (?,?,?,?,?)";
         String query =
-                String.format("INSERT INTO product ( %s, %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?,?)",
+                String.format("INSERT INTO Product ( %s, %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?,?)",
                         Product.name, Product.code, Product.company, Product.prate,
                         Product.wrate, Product.rrate, Product.stock);
 
@@ -204,7 +204,7 @@ public class DataHelper {
             prep.setDouble(4, prate);
             prep.setDouble(5, wrate);
             prep.setDouble(6, rrate);
-            prep.setDouble(7, stock);
+            prep.setInt(7, stock);
             prep.execute();
 
             conn.close();

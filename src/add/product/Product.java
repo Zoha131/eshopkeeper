@@ -13,7 +13,7 @@ public class Product {
     Button addbtn;
 
     public void initialize(){
-        
+
 //   tried to add validation rules
 //        nametxt.textProperty().addListener((observable, oldValue, newValue) -> {
 //            System.out.println("oldvalue: "+oldValue);
@@ -34,11 +34,12 @@ public class Product {
         );
 
         addbtn.setOnAction(event -> {
-            Double prate, wrate, rrate, stock;
+            double prate, wrate, rrate;
+            int stock;
             prate = Double.parseDouble(pratetxt.getText());
             wrate = Double.parseDouble(wratetxt.getText());
             rrate = Double.parseDouble(rratetxt.getText());
-            stock = Double.parseDouble(stocktxt.getText());
+            stock = Integer.parseInt(stocktxt.getText());
 
             boolean data = DataHelper.insertProduct(nametxt.getText(), codetxt.getText(), companytxt.getText(),
                     prate, wrate, rrate, stock);
