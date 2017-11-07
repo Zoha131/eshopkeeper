@@ -6,10 +6,7 @@ import model.Customer;
 import model.Product;
 import model.Supplier;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 
 public class DataHelper {
 
@@ -278,6 +275,40 @@ public class DataHelper {
         }catch (Exception e){
             System.out.println(e);
             return null;
+        }
+    }
+
+    public static boolean updateData(String table, String column, String value, int id){
+        String query = String.format("UPDATE %s SET %s='%s' WHERE id=%d",table,column,value,id);
+        return execute(query);
+    }
+
+    public static boolean updateData(String table, String column, double value, int id){
+        String query = String.format("UPDATE %s SET %s=%f WHERE id=%d",table,column,value,id);
+        return execute(query);
+    }
+
+    public static boolean updateData(String table, String column, int value, int id){
+        String query = String.format("UPDATE %s SET %s=%d WHERE id=%d",table,column,value,id);
+        return execute(query);
+    }
+
+    public static boolean deleteData(String table, int id){
+        String query = String.format("DELETE FROM %s WHERE id=%d",table,id);
+        return execute(query);
+    }
+
+    private static boolean execute(String query){
+        try {
+            Connection con = getConnection();
+            Statement std = con.createStatement();
+            std.execute(query);
+            std.close();
+            con.close();
+            return true;
+        }catch (Exception e){
+            System.out.println("DataHelper:: "+e);
+            return false;
         }
     }
 
