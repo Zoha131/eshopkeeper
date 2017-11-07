@@ -16,6 +16,10 @@ public class Customer {
         this.type = type;
     }
 
+    public Customer(double due, String name, String store, String address, String phone, String email, String type) {
+        this(0,due, name,store,address,phone,email,type);
+    }
+
     public int getId() {
         return id;
     }

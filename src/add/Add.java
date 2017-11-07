@@ -18,3 +18,6 @@ public class Add {
         addTab.tabMinWidthProperty().bind(root.widthProperty().divide(addTab.getTabs().size()).subtract(21));
     }
 }
+
+//todo-me to re order the text field of every view tosyncronised with tab command
+

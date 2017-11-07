@@ -8,9 +8,10 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import model.Supplier;
 
 
-public class Supplier {
+public class AddSupplier {
     @FXML private TextField nametext,phntext,emailtxt, strtxt, duetxt;
     @FXML private TextArea adrstxt;
     @FXML private Button add_btn;
@@ -32,9 +33,14 @@ public class Supplier {
         add_btn.setOnAction((ActionEvent event) -> {
 
             double due = duetxt.getText().equals("")? 0.00: Double.parseDouble(duetxt.getText());
+            Supplier sup = new Supplier(0,due,
+                    nametext.getText(),
+                    strtxt.getText(),
+                    adrstxt.getText(),
+                    phntext.getText(),
+                    emailtxt.getText());
 
-            Boolean add =  DataHelper.insertSupplier(nametext.getText(), strtxt.getText(), adrstxt.getText(), phntext.getText(),
-                    emailtxt.getText(), due);
+            Boolean add =  DataHelper.insertSupplier(sup);
             if(add){
                 nametext.clear();
                 adrstxt.clear();

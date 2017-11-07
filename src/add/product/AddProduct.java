@@ -5,8 +5,9 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import model.Product;
 
-public class Product {
+public class AddProduct {
     @FXML
     TextField nametxt, codetxt, companytxt, pratetxt, wratetxt, rratetxt, stocktxt;
     @FXML
@@ -21,9 +22,7 @@ public class Product {
 //            nametxt.setStyle("-fx-text-box-border: red ; -fx-focus-color: red ;");
 //        });
 
-
-        addbtn.disableProperty().bind(
-                Bindings.isEmpty(nametxt.textProperty())
+        addbtn.disableProperty().bind(Bindings.isEmpty(nametxt.textProperty())
                         .or(Bindings.isEmpty(codetxt.textProperty()))
                         .or(Bindings.isEmpty(companytxt.textProperty()))
                         .or(Bindings.isEmpty(pratetxt.textProperty()))
@@ -41,8 +40,8 @@ public class Product {
             rrate = Double.parseDouble(rratetxt.getText());
             stock = Integer.parseInt(stocktxt.getText());
 
-            boolean data = DataHelper.insertProduct(nametxt.getText(), codetxt.getText(), companytxt.getText(),
-                    prate, wrate, rrate, stock);
+            Product prod = new Product(0,stock, nametxt.getText(), codetxt.getText(), companytxt.getText(), prate,wrate,rrate);
+            boolean data = DataHelper.insertProduct(prod);
             if(data){
                 nametxt.clear();
                 codetxt.clear();
@@ -53,7 +52,7 @@ public class Product {
                 stocktxt.clear();
                 nametxt.requestFocus();
             }
-            System.out.println("Product Data inserted: "+ data);
+            System.out.println("product Data inserted: "+ data);
 
         });
     }

@@ -7,9 +7,10 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import model.Customer;
 
 
-public class Customer {
+public class AddCustomer {
     @FXML TextField nametext,phntext,emailtxt, strtxt, duetxt;
     @FXML ChoiceBox<String> typebox;
     @FXML TextArea adrstxt;
@@ -36,9 +37,16 @@ public class Customer {
 
         add_btn.setOnAction(event -> {
             String store = typebox.getValue().equals(CusType.WholeSale.toString())? strtxt.getText() : "";
+            double due = duetxt.getText().equals("")? 0.00: Double.parseDouble(duetxt.getText());
 
-            Boolean add =  DataHelper.insertCustomer(nametext.getText(), adrstxt.getText(), phntext.getText(),
-                    emailtxt.getText(), typebox.getValue(), store, Double.parseDouble(duetxt.getText()));
+            Customer cus = new Customer(due,
+                    nametext.getText(),
+                    store,adrstxt.getText(),
+                    phntext.getText(),
+                    emailtxt.getText(),
+                    typebox.getValue());
+
+            Boolean add =  DataHelper.insertCustomer(cus);
             if(add){
                 nametext.clear();
                 adrstxt.clear();

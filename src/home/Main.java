@@ -9,6 +9,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -31,12 +32,13 @@ public class Main extends Application {
 
         boolean data = DataHelper.createAllTables();
 
-        TabPane addCustomerView = FXMLLoader.load(getClass().getResource("../add/add.fxml"));
+        TabPane addCustomerView = FXMLLoader.load(getClass().getResource("../edit/edit.fxml"));
 
 
         MenuBar menuBar = this.getMenubar();
         root.setTop(menuBar);
         root.setCenter(addCustomerView);
+        //root.setBottom(new Text("majha"));
 
         addCustomerView.prefWidthProperty().bind(root.widthProperty());
         addCustomerView.prefHeightProperty().bind(root.heightProperty().subtract(30));
@@ -47,10 +49,12 @@ public class Main extends Application {
         primaryStage.setMinWidth(1030);
         primaryStage.setMinHeight(640);
 
-        System.out.println(DataHelper.creatCustomerTable());
+        System.out.println("Main:: all table created: "+DataHelper.creatCustomerTable());
 
         primaryStage.setTitle("eShopkeeper");
         primaryStage.setScene(new Scene(root, 1000, 600));
+
+        //primaryStage.setMaximized(true);
         primaryStage.show();
     }
 
@@ -63,9 +67,32 @@ public class Main extends Application {
         MenuBar menuBar = new MenuBar();
 
         Menu views = new Menu("Views");
-        MenuItem add_customer = new MenuItem("Add Supplier");
-        MenuItem add_product = new MenuItem("Add Product");
-        views.getItems().addAll(add_customer,add_product);
+        MenuItem add = new MenuItem("ADD");
+        MenuItem edit = new MenuItem("Edit");
+        add.setOnAction(event -> {
+            try{
+                TabPane add_tab = FXMLLoader.load(getClass().getResource("../add/add.fxml"));
+                boolean sameView = Main.getRoot().getCenter().getId().equals(add_tab.getId());
+                if(!sameView){
+                    Main.getRoot().setCenter(add_tab);
+                }
+            }catch (Exception e){
+                System.out.println("error " + e);
+            }
+        });
+        edit.setOnAction(event -> {
+            try{
+                TabPane edit_tab = FXMLLoader.load(getClass().getResource("../edit/edit.fxml"));
+                boolean sameView = Main.getRoot().getCenter().getId().equals(edit_tab.getId());
+                if(!sameView){
+                    Main.getRoot().setCenter(edit_tab);
+                }
+
+            }catch (Exception e){
+                System.out.println("error " + e);
+            }
+        });
+        views.getItems().addAll(add,edit);
 
         Menu help = new Menu("Help");
         MenuItem about = new MenuItem("About");
@@ -78,3 +105,4 @@ public class Main extends Application {
         return menuBar;
     }
 }
+
