@@ -1,14 +1,13 @@
 package model;
 
-public class Product {
-    private int id,stock;
-    private String name, code, company;
+public class Product extends Model {
+    private int stock;
+    private String code, company;
     private double prate, wrate, rrate;
 
     public Product(int id, int stock, String name, String code, String company, double prate, double wrate, double rrate) {
-        this.id = id;
+        super(id, name);
         this.stock = stock;
-        this.name = name;
         this.code = code;
         this.company = company;
         this.prate = prate;
@@ -16,12 +15,8 @@ public class Product {
         this.rrate = rrate;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public Product(){
+        this(0,0,"product","404","company",0,0,0);
     }
 
     public int getStock() {
@@ -30,14 +25,6 @@ public class Product {
 
     public void setStock(int stock) {
         this.stock = stock;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getCode() {
@@ -78,5 +65,16 @@ public class Product {
 
     public void setRrate(double rrate) {
         this.rrate = rrate;
+    }
+
+    public boolean equals(Product o) {
+        boolean equal = getName().equals(o.getName())
+                && code.equals(o.getCode())
+                && company.equals(o.getCompany())
+                && prate == o.getPrate()
+                && wrate == o.getWrate()
+                && rrate == o.getRrate();
+
+        return equal;
     }
 }

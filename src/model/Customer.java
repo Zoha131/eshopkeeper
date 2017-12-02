@@ -1,14 +1,12 @@
 package model;
 
-public class Customer {
-    int id;
+public class Customer extends Model {
     double due;
-    String name, store, address, phone, email, type;
+    String store, address, phone, email, type;
 
     public Customer(int id, double due, String name, String store, String address, String phone, String email, String type) {
-        this.id = id;
+        super(id, name);
         this.due = due;
-        this.name = name;
         this.store = store;
         this.address = address;
         this.phone = phone;
@@ -20,12 +18,8 @@ public class Customer {
         this(0,due, name,store,address,phone,email,type);
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public Customer(){
+        this(0,"Default Name", null, "Default Address", "01", "default@gmeil.com", "Retailer");
     }
 
     public double getDue() {
@@ -34,14 +28,6 @@ public class Customer {
 
     public void setDue(double due) {
         this.due = due;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getStore() {

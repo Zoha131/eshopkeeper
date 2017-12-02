@@ -3,6 +3,7 @@ package data_helper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Customer;
+import model.Invoice;
 import model.Product;
 import model.Supplier;
 
@@ -278,6 +279,78 @@ public class DataHelper {
         }
     }
 
+    public static boolean createSellTransactionTable(){
+        StringBuilder query = new StringBuilder();
+        query.append("CREATE TABLE IF NOT EXISTS sellTransaction ( ");
+        query.append(sellTransaction.id);
+        query.append(" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ");
+        query.append(sellTransaction.transactionId);
+        query.append(" TEXT NOT NULL UNIQUE, ");
+        query.append(sellTransaction.customerId);
+        query.append(" INTEGER NOT NULL, ");
+        query.append(sellTransaction.amount);
+        query.append(" DOUBLE NOT NULL, ");
+        query.append(sellTransaction.date);
+        query.append(" TEXT NOT NULL ) ");
+
+        return execute(query.toString());
+
+    }
+    public static boolean insertSellTransaction(){
+        return false;
+        //todo-me to implement this method
+    }
+
+    public static boolean createSellTable(){
+        StringBuilder query = new StringBuilder();
+        query.append("CREATE TABLE IF NOT EXISTS sell ( ");
+        query.append(sell.id);
+        query.append(" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ");
+        query.append(sell.customerId);
+        query.append(" INTEGER NOT NULL, ");
+        query.append(sell.productID);
+        query.append(" INTEGER NOT NULL, ");
+        query.append(sell.rate);
+        query.append(" DOUBLE NOT NULL, ");
+        query.append(sell.quantity);
+        query.append(" INTEGER NOT NULL, ");
+        query.append(sell.date);
+        query.append(" TEXT NOT NULL, ");
+        query.append(sell.transactionID);
+        query.append(" TEXT NOT NULL, ");
+        query.append(sell.soldby);
+        query.append(" TEXT NOT NULL ) ");
+
+        return execute(query.toString());
+    }
+    public static boolean insertSell(Invoice invoice) {
+        try {
+            String query = String.format("INSERT INTO sell ( %s, %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?,?)",
+                    sell.customerId, sell.productID, sell.rate, sell.quantity,
+                    sell.date, sell.transactionID, sell.soldby);
+
+            Connection conn = getConnection();
+
+            for (Invoice.Item item : invoice.getData()) {
+                PreparedStatement prep = conn.prepareStatement(query);
+                prep.setInt(1, invoice.getCustomer().getId());
+                prep.setInt(2, item.getProduct().getId());
+                prep.setDouble(3, item.getRrate());
+                prep.setInt(4, item.getQuantity());
+                prep.setString(5, invoice.getDate());
+                prep.setString(6, invoice.getTransactionID());
+                prep.setString(7, invoice.getSoldBy());
+                prep.execute();
+            }
+
+            conn.close();
+            return true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
     public static boolean updateData(String table, String column, String value, int id){
         String query = String.format("UPDATE %s SET %s='%s' WHERE id=%d",table,column,value,id);
         return execute(query);
@@ -315,7 +388,9 @@ public class DataHelper {
     public static boolean createAllTables(){
         return creatCustomerTable() &&
                 createProductTable() &&
-                creatSupplierTable();
+                creatSupplierTable() &&
+                createSellTransactionTable() &&
+                createSellTable();
     }
 
     public static enum customer {
@@ -347,6 +422,23 @@ public class DataHelper {
         email,
         store,
         due
+    }
+    public static enum sellTransaction {
+        id,
+        customerId,
+        amount,
+        date,
+        transactionId
+    }
+    public static enum sell {
+        id,
+        customerId,
+        productID,
+        rate,
+        quantity,
+        date,
+        soldby,
+        transactionID
     }
 }
 

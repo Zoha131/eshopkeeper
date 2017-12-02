@@ -1,26 +1,20 @@
 package model;
 
-public class Supplier {
-    int id;
+public class Supplier extends Model {
     double due;
-    String name, store, address, phone, email;
+    String store, address, phone, email;
 
     public Supplier(int id, double due, String name, String store, String address, String phone, String email) {
-        this.id = id;
+        super(id, name);
         this.due = due;
-        this.name = name;
         this.store = store;
         this.address = address;
         this.phone = phone;
         this.email = email;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public Supplier(){
+        this(0, 0.00, "Default Name", "Default Store", "Default Address","017","default@gmail.com");
     }
 
     public double getDue() {
@@ -29,14 +23,6 @@ public class Supplier {
 
     public void setDue(double due) {
         this.due = due;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getStore() {

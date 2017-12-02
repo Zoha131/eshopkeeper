@@ -12,7 +12,7 @@ import model.Customer;
 
 public class AddCustomer {
     @FXML TextField nametext,phntext,emailtxt, strtxt, duetxt;
-    @FXML ChoiceBox<String> typebox;
+    @FXML ComboBox<String> typebox;
     @FXML TextArea adrstxt;
     @FXML Button add_btn;
     @FXML Label strlbl;
