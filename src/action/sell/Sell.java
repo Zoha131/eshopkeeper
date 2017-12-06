@@ -3,6 +3,7 @@ package action.sell;
 import add.customer.AddCustomer;
 import data_helper.DataHelper;
 import home.Main;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -21,6 +22,7 @@ import model.*;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
+import javax.naming.Binding;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -41,6 +43,8 @@ public class Sell {
     GridPane grdPan;
     @FXML Label amountWordLBL;
 
+    private final double GRID_HEIGHT=1000;
+
     ObservableList<String> dataCustomerName, dataProductName;
     CustomerStringConverter converterCustomer;
     ObservableList<Customer> dataCustomer;
@@ -53,10 +57,6 @@ public class Sell {
     private Product addProduct;
     private double tableHeight = 50;
 
-
-    public Sell() {
-
-    }
 
     public void initialize() {
 
@@ -76,7 +76,6 @@ public class Sell {
 
 
         invoice = new Invoice();
-        datePick.setValue(LocalDate.now());
         setTableColumn();
 
 
@@ -87,14 +86,19 @@ public class Sell {
 
         AutoCompletionBinding<String> binding = TextFields.bindAutoCompletion(cusTxt, dataCustomerName);
         binding.setOnAutoCompleted((AutoCompletionBinding.AutoCompletionEvent<String> event) -> {
-            System.out.println("auto completion happened ");
             Customer curCustomer = converterCustomer.fromString(event.getCompletion());
             invoice.setCustomer(curCustomer);
             adrsTxt.setText(curCustomer.getAddress());
             emailTxt.setText(curCustomer.getEmail());
             phnTxt.setText(curCustomer.getPhone());
             invoiceTxt.setText(UUID.randomUUID().toString());
-            System.out.println(datePick.getEditor().getText());
+            datePick.setValue(LocalDate.now());
+            if(curCustomer.getType().equals(AddCustomer.CusType.Retailer.toString())) {
+                invoiceType.setValue(AddCustomer.CusType.Retailer.toString());
+            }
+            else{
+                invoiceType.setValue(AddCustomer.CusType.WholeSale.toString());
+            }
         });
 
         addOnAction();
@@ -104,6 +108,7 @@ public class Sell {
 
 
     private void addOnAction() {
+        addBtn.disableProperty().bind(Bindings.isEmpty(cusTxt.textProperty()));
         addBtn.setOnAction(event -> {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("Adding Product");
@@ -121,12 +126,12 @@ public class Sell {
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(name -> {
                 addProduct = converterProduct.fromString(name);
-                invoice.addData(new Invoice.Item(++serial, addProduct, 0));
+                invoice.addData(new Invoice.Item(++serial, addProduct, invoice.getCustomer().isRetailer(), 0));
                 addProduct = null;
                 itemTable.getItems().setAll(invoice.getData());
-                tableHeight = tableHeight+25;
+                tableHeight = tableHeight+30;
                 itemTable.setMaxHeight(tableHeight);
-                grdPan.setMinHeight(tableHeight+800);
+                grdPan.setMinHeight(tableHeight+GRID_HEIGHT);
             });
         });
         calcBtn.setOnAction(event -> {
@@ -143,8 +148,10 @@ public class Sell {
             invoice.setDate(datePick.getEditor().getText());
             invoice.setTransactionID(invoiceTxt.getText());
             invoice.setSoldBy(soldByTxt.getText());
+            Transaction transaction = new Transaction(0, invoice.getCustomer().getId(),
+                    Double.parseDouble(paidTxt.getText()),invoice.getDate() ,invoice.getTransactionID());
 
-            if(DataHelper.insertSell(invoice)) {
+            if(DataHelper.insertSell(invoice) && DataHelper.insertSellTransaction(transaction)) {
                 allClear();
             }
         });
@@ -162,8 +169,12 @@ public class Sell {
         emailTxt.clear();
         adrsTxt.clear();
         priceTxt.setText("0.00");
+        amountWordLBL.setText("");
         invoice = new Invoice();
         itemTable.getItems().setAll(invoice.getData());
+        tableHeight = 50;
+        itemTable.setMaxHeight(tableHeight);
+        grdPan.setMinHeight(tableHeight+GRID_HEIGHT);
     }
 
     private void setTableColumn(){
@@ -190,7 +201,7 @@ public class Sell {
         });
 
         TableColumn<Invoice.Item, Double> rateColumn = new TableColumn<>("Rate");
-        rateColumn.setCellValueFactory(new PropertyValueFactory<Invoice.Item, Double>("rrate"));
+        rateColumn.setCellValueFactory(new PropertyValueFactory<Invoice.Item, Double>("rate"));
 
         TableColumn<Invoice.Item, Double> totalColumn = new TableColumn<>("Total");
         totalColumn.setCellValueFactory(new PropertyValueFactory<Invoice.Item, Double>("total"));
@@ -201,10 +212,11 @@ public class Sell {
         itemDesc.setMinWidth(descMinWidth);
 
         itemTable.setMaxHeight(tableHeight);
+        itemTable.setFixedCellSize(30);
         itemTable.setEditable(true);
     }
 
-    public static void printNode(final Node node){
+    public void printNode(final Node node){
         Printer printer = Printer.getDefaultPrinter();
         PageLayout pageLayout = printer.createPageLayout(Paper.A4, PageOrientation.PORTRAIT, Printer.MarginType.HARDWARE_MINIMUM);
         PrinterAttributes attr = printer.getPrinterAttributes();
@@ -214,6 +226,8 @@ public class Sell {
         Scale scale = new Scale(scaleX, scaleY);
         node.getTransforms().add(scale);
 
+        setBtnVisible(false);
+
         if (job != null && job.showPrintDialog(node.getScene().getWindow())) {
             boolean success = job.printPage(pageLayout, node);
             if (success) {
@@ -222,6 +236,14 @@ public class Sell {
             }
         }
         node.getTransforms().remove(scale);
+        setBtnVisible(true);
+    }
+
+    void setBtnVisible(boolean p){
+        saveBtn.setVisible(p);
+        addBtn.setVisible(p);
+        calcBtn.setVisible(p);
+        printBtn.setVisible(p);
     }
 
 

@@ -1,5 +1,7 @@
 package model;
 
+import add.customer.AddCustomer;
+
 public class Customer extends Model {
     double due;
     String store, address, phone, email, type;
@@ -68,5 +70,9 @@ public class Customer extends Model {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public boolean isRetailer(){
+        return this.type.equals(AddCustomer.CusType.Retailer.toString());
     }
 }

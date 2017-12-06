@@ -93,27 +93,32 @@ public class Invoice {
         private int serial;
         private Product product;
         private int quantity;
-        private double rrate, total;
+        private double rate, total;
         private String description;
 
-        public Item(int serial, Product product, int quantity) {
+        public Item(int serial, Product product, boolean isRetailer, int quantity) {
             this.serial = serial;
             this.product = product;
             this.quantity = quantity;
-            this.rrate = product.getRrate();
-            this.total = quantity*rrate;
+            if(isRetailer){
+                this.rate = product.getRrate();
+            }
+            else {
+                this.rate = product.getWrate();
+            }
+            this.total = quantity* rate;
             this.description = product.getName()+" ("+product.getCode()+")";
         }
 
         public Item() {
         }
 
-        public double getRrate() {
-            return rrate;
+        public double getRate() {
+            return rate;
         }
 
-        public void setRrate(double rrate) {
-            this.rrate = rrate;
+        public void setRate(double rate) {
+            this.rate = rate;
         }
 
         public double getTotal() {
@@ -125,7 +130,7 @@ public class Invoice {
         }
 
         public void calTotal(){
-            this.total = this.rrate*this.quantity;
+            this.total = this.rate *this.quantity;
         }
 
         public String getDescription() {

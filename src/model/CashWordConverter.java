@@ -42,6 +42,7 @@ public class CashWordConverter {
 
         } catch (NumberFormatException nf) {
         }
+        pass = pass + " Taka Only";
         return pass;
     }
 

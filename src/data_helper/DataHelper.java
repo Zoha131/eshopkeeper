@@ -2,10 +2,7 @@ package data_helper;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import model.Customer;
-import model.Invoice;
-import model.Product;
-import model.Supplier;
+import model.*;
 
 import java.sql.*;
 
@@ -45,7 +42,7 @@ public class DataHelper {
         query.append(customer.due);
         query.append(" REAL NOT NULL DEFAULT 0.00 ) ");
 
-        try{
+        /*try{
             Connection conn = getConnection();
             PreparedStatement prp = conn.prepareStatement(query.toString());
             prp.execute();
@@ -56,7 +53,9 @@ public class DataHelper {
         }catch (Exception e){
             System.out.println(e.getMessage());
             return false;
-        }
+        }*/
+
+        return execute(query.toString());
     }
     public static boolean insertCustomer(Customer cus){
 
@@ -133,7 +132,7 @@ public class DataHelper {
         query.append(supplier.due);
         query.append(" REAL NOT NULL DEFAULT 0.00 ) ");
 
-        try{
+        /*try{
             Connection conn = getConnection();
             PreparedStatement prp = conn.prepareStatement(query.toString());
             prp.execute();
@@ -144,7 +143,8 @@ public class DataHelper {
         }catch (Exception e){
             System.out.println(e.getMessage());
             return false;
-        }
+        }*/
+        return execute(query.toString());
     }
     public static boolean insertSupplier(Supplier sup){
 
@@ -219,7 +219,7 @@ public class DataHelper {
         query.append(" INTEGER NOT NULL ) ");
 
 
-        try {
+        /*try {
             Connection conn = getConnection();
             PreparedStatement prp = conn.prepareStatement(query.toString());
             prp.execute();
@@ -229,7 +229,9 @@ public class DataHelper {
         }catch (Exception e){
             System.out.println(e.getMessage());
             return false;
-        }
+        }*/
+
+        return execute(query.toString());
     }
     public static boolean insertProduct(Product prod){
         //String query = "INSERT INTO product ( name, code, consumer_rate, holesale_rate, company) VALUES (?,?,?,?,?)";
@@ -296,9 +298,28 @@ public class DataHelper {
         return execute(query.toString());
 
     }
-    public static boolean insertSellTransaction(){
-        return false;
-        //todo-me to implement this method
+    public static boolean insertSellTransaction(Transaction transaction){
+        String query = String.format("INSERT INTO sellTransaction ( %s, %s, %s, %s) VALUES (?,?,?,?)",
+                sellTransaction.transactionId, sellTransaction.customerId,
+                sellTransaction.amount, sellTransaction.date);
+
+        try {
+            Connection conn = getConnection();
+            PreparedStatement prep = conn.prepareStatement(query);
+            prep.setString(1, transaction.getTransactionId());
+            prep.setInt(2, transaction.getCustomerId());
+            prep.setDouble(3, transaction.getAmount());
+            prep.setString(4, transaction.getDate());
+            prep.execute();
+
+            conn.close();
+            return true;
+            //todo-me to update customer's due data
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+
     }
 
     public static boolean createSellTable(){
@@ -335,7 +356,7 @@ public class DataHelper {
                 PreparedStatement prep = conn.prepareStatement(query);
                 prep.setInt(1, invoice.getCustomer().getId());
                 prep.setInt(2, item.getProduct().getId());
-                prep.setDouble(3, item.getRrate());
+                prep.setDouble(3, item.getRate());
                 prep.setInt(4, item.getQuantity());
                 prep.setString(5, invoice.getDate());
                 prep.setString(6, invoice.getTransactionID());
