@@ -6,8 +6,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.util.Pair;
-import model.Product;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
@@ -17,6 +15,7 @@ public class AddProductDialog extends Dialog<AddProductDialog.Model> {
 
     public AddProductDialog(ObservableList<String> dataProductName) {
         this.dataProductName = dataProductName;
+
         super.setTitle("eShopkeeper");
         super.setHeaderText("Insert Product Name and Quantity");
 
@@ -31,14 +30,14 @@ public class AddProductDialog extends Dialog<AddProductDialog.Model> {
         grid.setPadding(new Insets(30, 90, 20, 80));
 
         TextField productName = new TextField();
-        productName.setPromptText("Username");
+        productName.setPromptText("Product Name");
         AutoCompletionBinding<String> binding = TextFields.bindAutoCompletion(productName, dataProductName);
         TextField quantity = new TextField();
-        quantity.setPromptText("Password");
+        quantity.setPromptText("Quantity");
 
-        grid.add(new Label("Username:"), 0, 0);
+        grid.add(new Label("Product:"), 0, 0);
         grid.add(productName, 1, 0);
-        grid.add(new Label("Password:"), 0, 1);
+        grid.add(new Label("Quantity:"), 0, 1);
         grid.add(quantity, 1, 1);
 
         // Enable/Disable login button depending on whether a productName was entered.
@@ -57,6 +56,7 @@ public class AddProductDialog extends Dialog<AddProductDialog.Model> {
         super.setResultConverter(dialogButton -> {
             if (dialogButton == loginButtonType) {
                 return new Model(productName.getText(), Integer.parseInt(quantity.getText()));
+                //todo-me to add data validation logic
             }
             return null;
         });

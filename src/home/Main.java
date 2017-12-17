@@ -72,6 +72,7 @@ public class Main extends Application {
         MenuItem add = new MenuItem("ADD");
         MenuItem edit = new MenuItem("Edit");
         MenuItem sell = new MenuItem("Sell");
+        MenuItem transaction = new MenuItem("Transaction");
         MenuItem logout = new MenuItem("Log Out");
 
         add.setOnAction(event -> {
@@ -116,6 +117,20 @@ public class Main extends Application {
             }
         });
 
+        transaction.setOnAction(event -> {
+            try{
+                Parent parent = FXMLLoader.load(getClass().getResource("/action/transaction/addTransaction.fxml"));
+                boolean sameView = Main.getRoot().getCenter().getId().equals(parent.getId());
+
+                if(!sameView){
+                    Main.getRoot().setCenter(parent);
+                }
+
+            }catch (Exception e){
+                System.out.println("error " + e);
+            }
+        });
+
         logout.setOnAction(event -> {
             try{
                 Parent loginView = FXMLLoader.load(getClass().getResource("/login/login.fxml"));
@@ -130,7 +145,7 @@ public class Main extends Application {
             }
         });
 
-        views.getItems().addAll(add,edit,sell, logout);
+        views.getItems().addAll(add,edit,sell,transaction, logout);
 
         Menu help = new Menu("Help");
         MenuItem about = new MenuItem("About");

@@ -126,74 +126,56 @@ public class Sell {
             Optional<AddProductDialog.Model> result = dialog.showAndWait();
 
             result.ifPresent(model -> {
-                System.out.println("Username=" + model.getName() + ", Password=" + model.getQuantity());
+                //get product by name and add to the invoice data
                 addProduct = converterProduct.fromString(model.getName());
                 invoice.addData(new Invoice.Item(++serial, addProduct, invoice.getCustomer().isRetailer(), model.getQuantity()));
                 addProduct = null;
+
+                //calculate the invoice price and update the price in textField
                 invoice.calPrice();
                 priceTxt.setText(String.valueOf(invoice.getPrice()));
                 totalTxt.setText(String.valueOf(invoice.getPrice()));
                 itemTable.getItems().setAll(invoice.getData());
+
+                //enlarge the height for better view
                 tableHeight = tableHeight+30;
                 itemTable.setMaxHeight(tableHeight);
                 grdPan.setMinHeight(tableHeight+GRID_HEIGHT);
+
                 //scrollpane will be updated two times. and then the table will be fixed.
                 if(scrollTime<2){
                     scrollPane.setVvalue(scrollPane.getVmax());
                     scrollTime++;
                 }
             });
-
-            /*TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Adding Product");
-            dialog.setHeaderText("Adding Product");
-            dialog.setContentText("Please enter product name:");
-
-            AutoCompletionBinding<String> binding = TextFields.bindAutoCompletion(dialog.getEditor(), dataProductName);
-
-            *//*binding.setOnAutoCompleted((AutoCompletionBinding.AutoCompletionEvent<String> eventAuto)-> {
-                    System.out.println("auto completion happened " + eventAuto.getCompletion());
-            });*//*
-
-            Optional<String> result = dialog.showAndWait();
-            result.ifPresent(name -> {
-                addProduct = converterProduct.fromString(name);
-                invoice.addData(new Invoice.Item(++serial, addProduct, invoice.getCustomer().isRetailer(), 0));
-                addProduct = null;
-                itemTable.getItems().setAll(invoice.getData());
-                tableHeight = tableHeight+30;
-                itemTable.setMaxHeight(tableHeight);
-                grdPan.setMinHeight(tableHeight+GRID_HEIGHT);
-                //scrollpane will be updated two times. and then the table will be fixed.
-                if(scrollTime<2){
-                    scrollPane.setVvalue(scrollPane.getVmax());
-                    scrollTime++;
-                }
-            });*/
         });
-        calcBtn.setOnAction(event -> {
-            double price = Double.parseDouble(totalTxt.getText());
-            double paid = Double.parseDouble(paidTxt.getText());
-            double due = price - paid;
-            dueTxt.setText(String.valueOf(due));
-            amountWordLBL.setText(CashWordConverter.doubleConvert(invoice.getPrice()));
-        });
+        calcBtn.setOnAction(this::priceCalculate);
         printBtn.setOnAction(event -> {
             printNode(grdPan);
         });
         saveBtn.setOnAction((event -> {
+            //calucating price and due before saving in database
+            priceCalculate(null);
+
+            //setting due to the customer
+            Customer customer = invoice.getCustomer();
+            customer.setDue(customer.getDue()+Double.parseDouble(dueTxt.getText()));
+
+            //adding data to invoice before saving
             invoice.setDate(datePick.getEditor().getText());
             invoice.setTransactionID(invoiceTxt.getText());
             invoice.setSoldBy(soldByTxt.getText());
-            Transaction transaction = new Transaction(0, invoice.getCustomer().getId(),
-                    Double.parseDouble(paidTxt.getText()),invoice.getDate() ,invoice.getTransactionID());
+            Transaction transaction = new Transaction(0, invoice.getCustomer().getId(),Double.parseDouble(paidTxt.getText()),invoice.getDate() ,invoice.getTransactionID(), invoice.getSoldBy());
 
+            //lowering the opacity when saving to database and sowing message
             grdPan.setOpacity(.5);
             Toast.makeText(Main.getMainStage(), "Saving", 500, 200, 200);
 
+            //adding the data in another thread to have better UI experience
             Thread t1 = new Thread(()-> {
                 boolean isSaved = DataHelper.insertSell(invoice) && DataHelper.insertSellTransaction(transaction);
-                if(isSaved){
+                boolean isUpdated = DataHelper.updateData("customer", "due", customer.getDue(), customer.getId());
+                if(isSaved && isUpdated){
                     Platform.runLater(()->{
                         allClear();
                         scrollPane.setVvalue(.32);
@@ -203,22 +185,9 @@ public class Sell {
             });
             t1.start();
         }));
-
-        /*saveBtn.setOnAction(event -> {
-            invoice.setDate(datePick.getEditor().getText());
-            invoice.setTransactionID(invoiceTxt.getText());
-            invoice.setSoldBy(soldByTxt.getText());
-            Transaction transaction = new Transaction(0, invoice.getCustomer().getId(),
-                    Double.parseDouble(paidTxt.getText()),invoice.getDate() ,invoice.getTransactionID());
-
-            if(DataHelper.insertSell(invoice) && DataHelper.insertSellTransaction(transaction)) {
-                allClear();
-            }
-
-            scrollPane.setVvalue(.32);
-        });*/
     }
 
+    //method to clear all the textfield and tableview after save to databes
     private void allClear(){
         cusTxt.clear();
         dueTxt.setText("0.00");
@@ -306,6 +275,14 @@ public class Sell {
         addBtn.setVisible(p);
         calcBtn.setVisible(p);
         printBtn.setVisible(p);
+    }
+
+    private void priceCalculate(ActionEvent actionEvent){
+        double price = Double.parseDouble(totalTxt.getText());
+        double paid = Double.parseDouble(paidTxt.getText());
+        double due = price - paid;
+        dueTxt.setText(String.valueOf(due));
+        amountWordLBL.setText(CashWordConverter.doubleConvert(invoice.getPrice()));
     }
 
 

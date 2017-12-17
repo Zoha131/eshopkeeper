@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<GridPane fx:id="transactionView" alignment="CENTER_RIGHT" maxHeight="Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="action.transaction.AddTransaction">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="139.0" minWidth="10.0" prefWidth="139.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="220.0" minWidth="10.0" prefWidth="220.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="214.0" minWidth="10.0" prefWidth="178.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="191.0" minWidth="10.0" prefWidth="146.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="220.0" minWidth="10.0" prefWidth="216.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="179.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="189.0" minHeight="0.0" prefHeight="69.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="207.0" minHeight="0.0" prefHeight="73.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="179.0" minHeight="0.0" prefHeight="76.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="210.0" minHeight="0.0" prefHeight="69.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="250.0" minHeight="0.0" prefHeight="99.0" vgrow="SOMETIMES" />
+        <RowConstraints fx:id="constrain" maxHeight="250.0" minHeight="0.0" prefHeight="71.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="242.0" minHeight="0.0" prefHeight="78.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <children>
+        <Label alignment="CENTER" contentDisplay="CENTER" text="Transaction" textAlignment="CENTER" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+            <font>
+                <Font size="24.0" />
+            </font></Label>
+        <Label text="Tr. Type" GridPane.rowIndex="2" />
+        <ComboBox fx:id="trType" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <Label text="Name" GridPane.rowIndex="3" />
+        <TextField fx:id="nameTxt" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+        <Label text="Address" GridPane.rowIndex="4" />
+        <TextField fx:id="adrsTxt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        <Label text="Phone" GridPane.rowIndex="5" />
+        <TextField fx:id="phnTxt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+        <Label text="Tr. ID" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+        <TextField fx:id="trIdTxt" editable="false" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+        <Label text="Date" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+        <DatePicker fx:id="datePick" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+        <Label text="Taken By" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+        <TextField fx:id="takenbyTxt" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+        <Label text="Amount" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+        <TextField fx:id="amntTxt" GridPane.columnIndex="4" GridPane.rowIndex="5" />
+      <Button fx:id="saveBtn" mnemonicParsing="false" text="Save" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="6" />
+
+    </children>
+    <padding>
+        <Insets left="50.0" right="50.0" />
+    </padding>
+</GridPane>
