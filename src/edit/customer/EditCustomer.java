@@ -53,6 +53,8 @@ public class EditCustomer {
                 tableView.getItems().add(customer);
             }
         });
+        addbtn.setOpacity(0);
+        //todo-me to add Add Button in a user friendly way.
 
         cusBorderpane.setCenter(tableView);
     }

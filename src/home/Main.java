@@ -15,12 +15,16 @@ public class Main extends Application {
 
     private static BorderPane root = new BorderPane();
     private static Stage mainStage;
+    private static MenuBar mainMenu;
 
     public static BorderPane getRoot(){
         return Main.root;
     }
     public static Stage getMainStage(){
         return mainStage;
+    }
+    public static MenuBar getMainMenu() {
+        return mainMenu;
     }
 
 
@@ -31,16 +35,12 @@ public class Main extends Application {
 
         boolean data = DataHelper.createAllTables();
 
-        TabPane addCustomerView = FXMLLoader.load(getClass().getResource("../edit/edit.fxml"));
-        Parent parent = FXMLLoader.load(getClass().getResource("../action/sell/sell.fxml"));
-        ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setId("scroll");
-        scrollPane.setContent(parent);
+        TabPane addCustomerView = FXMLLoader.load(getClass().getResource("/edit/edit.fxml"));
+        Parent parent = FXMLLoader.load(getClass().getResource("/login/login.fxml"));
 
 
-        MenuBar menuBar = this.getMenubar();
-        root.setTop(menuBar);
-        root.setCenter(scrollPane);
+        mainMenu = this.getMenubar();
+        root.setCenter(parent);
 
         addCustomerView.prefWidthProperty().bind(root.widthProperty());
         addCustomerView.prefHeightProperty().bind(root.heightProperty().subtract(30));
@@ -68,14 +68,15 @@ public class Main extends Application {
     private MenuBar getMenubar(){
         MenuBar menuBar = new MenuBar();
 
-        Menu views = new Menu("Views");
+        Menu views = new Menu("Action");
         MenuItem add = new MenuItem("ADD");
         MenuItem edit = new MenuItem("Edit");
         MenuItem sell = new MenuItem("Sell");
+        MenuItem logout = new MenuItem("Log Out");
 
         add.setOnAction(event -> {
             try{
-                TabPane add_tab = FXMLLoader.load(getClass().getResource("../add/add.fxml"));
+                TabPane add_tab = FXMLLoader.load(getClass().getResource("/add/add.fxml"));
                 boolean sameView = Main.getRoot().getCenter().getId().equals(add_tab.getId());
                 if(!sameView){
                     Main.getRoot().setCenter(add_tab);
@@ -87,7 +88,7 @@ public class Main extends Application {
 
         edit.setOnAction(event -> {
             try{
-                TabPane edit_tab = FXMLLoader.load(getClass().getResource("../edit/edit.fxml"));
+                TabPane edit_tab = FXMLLoader.load(getClass().getResource("/edit/edit.fxml"));
                 boolean sameView = Main.getRoot().getCenter().getId().equals(edit_tab.getId());
                 if(!sameView){
                     Main.getRoot().setCenter(edit_tab);
@@ -100,7 +101,7 @@ public class Main extends Application {
 
         sell.setOnAction(event -> {
             try{
-                Parent parent = FXMLLoader.load(getClass().getResource("../action/sell/sell.fxml"));
+                Parent parent = FXMLLoader.load(getClass().getResource("/action/sell/sell.fxml"));
                 ScrollPane scrollPane = new ScrollPane();
                 scrollPane.setId("scroll");
                 scrollPane.setContent(parent);
@@ -115,7 +116,21 @@ public class Main extends Application {
             }
         });
 
-        views.getItems().addAll(add,edit,sell);
+        logout.setOnAction(event -> {
+            try{
+                Parent loginView = FXMLLoader.load(getClass().getResource("/login/login.fxml"));
+                boolean sameView = Main.getRoot().getCenter().getId().equals(loginView.getId());
+                if(!sameView){
+                    Main.getRoot().setCenter(loginView);
+                    Main.getRoot().setTop(null);
+                }
+
+            }catch (Exception e){
+                System.out.println("error " + e);
+            }
+        });
+
+        views.getItems().addAll(add,edit,sell, logout);
 
         Menu help = new Menu("Help");
         MenuItem about = new MenuItem("About");

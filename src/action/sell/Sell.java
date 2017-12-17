@@ -3,9 +3,12 @@ package action.sell;
 import add.customer.AddCustomer;
 import data_helper.DataHelper;
 import home.Main;
+import home.Toast;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.print.*;
@@ -21,6 +24,7 @@ import javafx.util.converter.IntegerStringConverter;
 import model.*;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
+import sun.security.krb5.SCDynamicStoreConfig;
 
 import javax.naming.Binding;
 import java.lang.reflect.InvocationTargetException;
@@ -29,21 +33,19 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class Sell {
-    @FXML
-    TextField cusTxt, adrsTxt, phnTxt, emailTxt, invoiceTxt, soldByTxt,priceTxt, vatTxt, totalTxt, paidTxt, dueTxt;
-    @FXML
-    TableView<Invoice.Item> itemTable;
-    @FXML
-    ComboBox<String> invoiceType;
-    @FXML
-    DatePicker datePick;
-    @FXML
-    Button saveBtn, addBtn, calcBtn, printBtn;
-    @FXML
-    GridPane grdPan;
-    @FXML Label amountWordLBL;
+    @FXML    TextField cusTxt, adrsTxt, phnTxt, emailTxt, invoiceTxt, soldByTxt,priceTxt, vatTxt, totalTxt, paidTxt, dueTxt;
+    @FXML    TableView<Invoice.Item> itemTable;
+    @FXML    ComboBox<String> invoiceType;
+    @FXML    DatePicker datePick;
+    @FXML    Button saveBtn, addBtn, calcBtn, printBtn;
+    @FXML    GridPane grdPan;
+    @FXML    Label amountWordLBL;
+
+    private ScrollPane scrollPane;
 
     private final double GRID_HEIGHT=1000;
+    private int scrollTime = 0;
+    private boolean isScrollable = true;
 
     ObservableList<String> dataCustomerName, dataProductName;
     CustomerStringConverter converterCustomer;
@@ -59,6 +61,7 @@ public class Sell {
 
 
     public void initialize() {
+
 
         dataCustomer = DataHelper.getCustomer();
         dataCustomerName = FXCollections.observableArrayList();
@@ -99,9 +102,16 @@ public class Sell {
             else{
                 invoiceType.setValue(AddCustomer.CusType.WholeSale.toString());
             }
-        });
 
+            //to scroll below to show to add button
+            scrollPane =(ScrollPane) Main.getRoot().getCenter();
+            if(isScrollable){
+                scrollPane.setVvalue(.4);
+                isScrollable = false;
+            }
+        });
         addOnAction();
+
 
 
     }
@@ -109,19 +119,41 @@ public class Sell {
 
     private void addOnAction() {
         addBtn.disableProperty().bind(Bindings.isEmpty(cusTxt.textProperty()));
-        addBtn.setOnAction(event -> {
-            TextInputDialog dialog = new TextInputDialog();
+        addBtn.setOnAction((ActionEvent event) -> {
+
+            AddProductDialog dialog = new AddProductDialog(dataProductName);
+
+            Optional<AddProductDialog.Model> result = dialog.showAndWait();
+
+            result.ifPresent(model -> {
+                System.out.println("Username=" + model.getName() + ", Password=" + model.getQuantity());
+                addProduct = converterProduct.fromString(model.getName());
+                invoice.addData(new Invoice.Item(++serial, addProduct, invoice.getCustomer().isRetailer(), model.getQuantity()));
+                addProduct = null;
+                invoice.calPrice();
+                priceTxt.setText(String.valueOf(invoice.getPrice()));
+                totalTxt.setText(String.valueOf(invoice.getPrice()));
+                itemTable.getItems().setAll(invoice.getData());
+                tableHeight = tableHeight+30;
+                itemTable.setMaxHeight(tableHeight);
+                grdPan.setMinHeight(tableHeight+GRID_HEIGHT);
+                //scrollpane will be updated two times. and then the table will be fixed.
+                if(scrollTime<2){
+                    scrollPane.setVvalue(scrollPane.getVmax());
+                    scrollTime++;
+                }
+            });
+
+            /*TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("Adding Product");
             dialog.setHeaderText("Adding Product");
             dialog.setContentText("Please enter product name:");
 
             AutoCompletionBinding<String> binding = TextFields.bindAutoCompletion(dialog.getEditor(), dataProductName);
 
-            binding.setOnAutoCompleted((AutoCompletionBinding.AutoCompletionEvent<String> eventAuto)-> {
+            *//*binding.setOnAutoCompleted((AutoCompletionBinding.AutoCompletionEvent<String> eventAuto)-> {
                     System.out.println("auto completion happened " + eventAuto.getCompletion());
-
-
-            });
+            });*//*
 
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(name -> {
@@ -132,7 +164,12 @@ public class Sell {
                 tableHeight = tableHeight+30;
                 itemTable.setMaxHeight(tableHeight);
                 grdPan.setMinHeight(tableHeight+GRID_HEIGHT);
-            });
+                //scrollpane will be updated two times. and then the table will be fixed.
+                if(scrollTime<2){
+                    scrollPane.setVvalue(scrollPane.getVmax());
+                    scrollTime++;
+                }
+            });*/
         });
         calcBtn.setOnAction(event -> {
             double price = Double.parseDouble(totalTxt.getText());
@@ -144,7 +181,30 @@ public class Sell {
         printBtn.setOnAction(event -> {
             printNode(grdPan);
         });
-        saveBtn.setOnAction(event -> {
+        saveBtn.setOnAction((event -> {
+            invoice.setDate(datePick.getEditor().getText());
+            invoice.setTransactionID(invoiceTxt.getText());
+            invoice.setSoldBy(soldByTxt.getText());
+            Transaction transaction = new Transaction(0, invoice.getCustomer().getId(),
+                    Double.parseDouble(paidTxt.getText()),invoice.getDate() ,invoice.getTransactionID());
+
+            grdPan.setOpacity(.5);
+            Toast.makeText(Main.getMainStage(), "Saving", 500, 200, 200);
+
+            Thread t1 = new Thread(()-> {
+                boolean isSaved = DataHelper.insertSell(invoice) && DataHelper.insertSellTransaction(transaction);
+                if(isSaved){
+                    Platform.runLater(()->{
+                        allClear();
+                        scrollPane.setVvalue(.32);
+                        grdPan.setOpacity(1);
+                    });
+                }
+            });
+            t1.start();
+        }));
+
+        /*saveBtn.setOnAction(event -> {
             invoice.setDate(datePick.getEditor().getText());
             invoice.setTransactionID(invoiceTxt.getText());
             invoice.setSoldBy(soldByTxt.getText());
@@ -154,7 +214,9 @@ public class Sell {
             if(DataHelper.insertSell(invoice) && DataHelper.insertSellTransaction(transaction)) {
                 allClear();
             }
-        });
+
+            scrollPane.setVvalue(.32);
+        });*/
     }
 
     private void allClear(){

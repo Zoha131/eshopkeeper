@@ -32,19 +32,19 @@
             <Font size="24.0" />
          </font></Label>
       <Label text="Name" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <Label text="Product Code" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <Label text="Retail Rate" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-      <Label text="WholeSale Rate" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-      <Label text="Company Name" GridPane.columnIndex="1" GridPane.rowIndex="3" />
       <TextField fx:id="nametxt" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+      <Label text="Product Code" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <TextField fx:id="codetxt" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-      <TextField fx:id="rratetxt" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-      <TextField fx:id="wratetxt" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+      <Label text="Company Name" GridPane.columnIndex="1" GridPane.rowIndex="3" />
       <TextField fx:id="companytxt" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-      <Button fx:id="addbtn" mnemonicParsing="false" text="Add Product" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="TOP" />
       <Label text="Purchase Rate" GridPane.columnIndex="1" GridPane.rowIndex="4" />
       <TextField fx:id="pratetxt" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-      <TextField fx:id="stocktxt" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+      <Label text="Retail Rate" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+      <TextField fx:id="rratetxt" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+      <Label text="WholeSale Rate" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+      <TextField fx:id="wratetxt" GridPane.columnIndex="2" GridPane.rowIndex="6" />
       <Label text="Stock Amount" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+      <TextField fx:id="stocktxt" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+      <Button fx:id="addbtn" mnemonicParsing="false" text="Add Product" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="TOP" />
    </children>
 </GridPane>

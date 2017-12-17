@@ -54,6 +54,8 @@ public class EditProduct {
                 //todo-me add logic to restrict user adding multiple template item
             }
         });
+        addbtn.setOpacity(0);
+        //todo-me to add Add Button in a user friendly way.
     }
 
     private void setColumn(TableView<Product> tableView){

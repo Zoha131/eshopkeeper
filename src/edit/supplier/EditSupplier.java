@@ -43,6 +43,7 @@ public class EditSupplier {
             }
         });
 
+
         addbtn.setOnAction(event -> {
             Supplier supplier = new Supplier();
             boolean isInserted = DataHelper.insertSupplier(supplier);
@@ -50,6 +51,8 @@ public class EditSupplier {
                 tableView.getItems().add(supplier);
             }
         });
+        addbtn.setOpacity(0);
+        //todo-me to add Add Button in a user friendly way.
 
         supBorderpane.setCenter(tableView);
     }

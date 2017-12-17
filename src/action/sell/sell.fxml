@@ -75,7 +75,7 @@
             <TextField fx:id="paidTxt" text="0.00" GridPane.columnIndex="4" GridPane.rowIndex="11" />
             <TextField fx:id="dueTxt" editable="false" text="0.00" GridPane.columnIndex="4" GridPane.rowIndex="12" />
             <TableView fx:id="itemTable" editable="true" prefHeight="200.0" prefWidth="500.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="7" GridPane.vgrow="ALWAYS">
-                
+
             </TableView>
       <Button fx:id="saveBtn" mnemonicParsing="false" text="Save" GridPane.columnIndex="3" GridPane.rowIndex="14" GridPane.valignment="TOP" />
       <Button fx:id="addBtn" mnemonicParsing="false" text="Add Item" GridPane.halignment="CENTER" GridPane.rowIndex="9" />

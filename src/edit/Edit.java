@@ -16,5 +16,6 @@ public class Edit {
         ObservableList<Customer> data = FXCollections.observableArrayList();
         root = Main.getRoot();
         editTab.tabMinWidthProperty().bind(root.widthProperty().divide(editTab.getTabs().size()).subtract(21));
+        //todo-me to refactor edit data in table column. Current problem is the data don't update in the current observable list.
     }
 }
