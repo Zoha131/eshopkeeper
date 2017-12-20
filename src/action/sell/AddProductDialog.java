@@ -1,6 +1,9 @@
 package action.sell;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -41,10 +44,11 @@ public class AddProductDialog extends Dialog<AddProductDialog.Model> {
         grid.add(quantity, 1, 1);
 
         // Enable/Disable login button depending on whether a productName was entered.
-        Node loginButton = super.getDialogPane().lookupButton(loginButtonType);
-        loginButton.setDisable(true);
+        BooleanProperty autoComletedProperty = new SimpleBooleanProperty(false);
+        Node selectButton = super.getDialogPane().lookupButton(loginButtonType);
+        selectButton.disableProperty().bind(autoComletedProperty.not().or(Bindings.isEmpty(quantity.textProperty())));
         binding.setOnAutoCompleted((AutoCompletionBinding.AutoCompletionEvent<String> eventAuto)-> {
-            loginButton.setDisable(false);
+            autoComletedProperty.setValue(true);
         });
 
         super.getDialogPane().setContent(grid);
