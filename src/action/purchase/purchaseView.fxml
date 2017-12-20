@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<GridPane fx:id="grdPan" alignment="CENTER_RIGHT" maxHeight="Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="action.purchase.PurchaseView">
+<GridPane fx:id="purInvoiceGrid" alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="action.purchase.PurchaseView">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -26,8 +26,8 @@
         <RowConstraints maxHeight="210.0" minHeight="0.0" prefHeight="41.0" vgrow="SOMETIMES" />
         <RowConstraints maxHeight="250.0" minHeight="0.0" prefHeight="47.0" vgrow="SOMETIMES" />
         <RowConstraints fx:id="constrain" maxHeight="242.0" minHeight="0.0" prefHeight="49.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="9999.0" minHeight="0.0" prefHeight="38.0" vgrow="ALWAYS" />
-        <RowConstraints maxHeight="466.0" minHeight="0.0" prefHeight="67.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="9999.0" minHeight="0.0" prefHeight="38.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="9999.0" minHeight="0.0" prefHeight="67.0" vgrow="ALWAYS" />
         <RowConstraints maxHeight="466.0" minHeight="0.0" prefHeight="56.0" vgrow="SOMETIMES" />
         <RowConstraints maxHeight="466.0" minHeight="0.0" prefHeight="59.0" vgrow="SOMETIMES" />
         <RowConstraints maxHeight="466.0" minHeight="0.0" prefHeight="69.0" vgrow="SOMETIMES" />
@@ -57,9 +57,9 @@
         <Label text="Paid: " GridPane.columnIndex="3" GridPane.rowIndex="9" />
         <Label text="Due: " GridPane.columnIndex="3" GridPane.rowIndex="10" />
         <TextField fx:id="totalTxt" editable="false" text="0.00" GridPane.columnIndex="4" GridPane.rowIndex="8" />
-        <TextField fx:id="paidTxt" text="0.00" GridPane.columnIndex="4" GridPane.rowIndex="9" />
-        <TextField fx:id="dueTxt" editable="false" text="0.00" GridPane.columnIndex="4" GridPane.rowIndex="10" />
-        <TableView fx:id="itemTable" editable="true" prefHeight="200.0" prefWidth="500.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="7" GridPane.vgrow="ALWAYS">
+        <TextField fx:id="paidTxt" promptText="paidTxt" text="0.00" GridPane.columnIndex="4" GridPane.rowIndex="9" />
+        <TextField fx:id="dueTxt" editable="false" promptText="dueTxt" text="0.00" GridPane.columnIndex="4" GridPane.rowIndex="10" />
+        <TableView fx:id="itemTable" editable="true" prefHeight="50.0" prefWidth="500.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="7" GridPane.vgrow="ALWAYS">
 
         </TableView>
         <Button fx:id="addBtn" mnemonicParsing="false" text="Add Item" GridPane.halignment="CENTER" GridPane.rowIndex="9" />

@@ -1,5 +1,7 @@
 package model;
 
+import converter.DateStringConverter;
+
 import java.time.LocalDate;
 
 public class SellHistory {

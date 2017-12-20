@@ -1,7 +1,8 @@
 package history.sell.customer;
 
+import converter.DateStringConverter;
+import converter.ModelStringConverter;
 import data_helper.DataHelper;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;

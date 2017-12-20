@@ -1,6 +1,9 @@
 package action.sell;
 
 import add.customer.AddCustomer;
+import converter.CashWordConverter;
+import converter.DateStringConverter;
+import converter.ModelStringConverter;
 import data_helper.DataHelper;
 import home.Main;
 import home.Toast;
@@ -69,13 +72,13 @@ public class SellView {
 
         dataProduct = DataHelper.getProduct();
         dataProductName = FXCollections.observableArrayList();
-        converterProduct = new ModelStringConverter(dataProduct);
+        converterProduct = new ModelStringConverter<>(dataProduct);
         for(Product prod: dataProduct){
             dataProductName.add(converterProduct.toString(prod));
         }
 
 
-        invoice = new Invoice();
+        invoice = new Invoice<>();
         setTableColumn();
 
         invoiceType.getItems().addAll(AddCustomer.CusType.WholeSale.toString(), AddCustomer.CusType.Retailer.toString());

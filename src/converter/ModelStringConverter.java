@@ -1,6 +1,7 @@
-package model;
+package converter;
 
 import javafx.util.StringConverter;
+import model.Model;
 
 import java.util.List;
 

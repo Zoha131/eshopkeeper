@@ -1,4 +1,4 @@
-package model;
+package converter;
 
 import javafx.util.StringConverter;
 
