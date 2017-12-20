@@ -9,7 +9,6 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.print.*;
 import javafx.scene.Node;
@@ -17,24 +16,19 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.transform.Scale;
-import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 import model.*;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
-import sun.security.krb5.SCDynamicStoreConfig;
 
-import javax.naming.Binding;
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
-public class Sell {
+public class SellView {
     @FXML    TextField cusTxt, adrsTxt, phnTxt, emailTxt, invoiceTxt, soldByTxt,priceTxt, vatTxt, totalTxt, paidTxt, dueTxt;
-    @FXML    TableView<Invoice.Item> itemTable;
+    @FXML    TableView<Item> itemTable;
     @FXML    ComboBox<String> invoiceType;
     @FXML    DatePicker datePick;
     @FXML    Button saveBtn, addBtn, calcBtn, printBtn;
@@ -48,31 +42,34 @@ public class Sell {
     private boolean isScrollable = true;
 
     ObservableList<String> dataCustomerName, dataProductName;
-    CustomerStringConverter converterCustomer;
+    ModelStringConverter<Customer> converterCustomer;
     ObservableList<Customer> dataCustomer;
     ObservableList<Product> dataProduct;
-    ProductStringConverter converterProduct;
+    ModelStringConverter<Product> converterProduct;
 
 
-    private Invoice invoice;
+    private Invoice<Customer> invoice;
     private int serial=0;
     private Product addProduct;
     private double tableHeight = 50;
+    private DateStringConverter dateStringConverter;
 
 
     public void initialize() {
 
+        dateStringConverter = new DateStringConverter();
+        datePick.setConverter(dateStringConverter);
 
         dataCustomer = DataHelper.getCustomer();
         dataCustomerName = FXCollections.observableArrayList();
         for (Customer cus : dataCustomer) {
             dataCustomerName.add(cus.getName());
         }
-        converterCustomer = new CustomerStringConverter(dataCustomer);
+        converterCustomer = new ModelStringConverter<>(dataCustomer);
 
         dataProduct = DataHelper.getProduct();
         dataProductName = FXCollections.observableArrayList();
-        converterProduct = new ProductStringConverter(dataProduct);
+        converterProduct = new ModelStringConverter(dataProduct);
         for(Product prod: dataProduct){
             dataProductName.add(converterProduct.toString(prod));
         }
@@ -81,8 +78,6 @@ public class Sell {
         invoice = new Invoice();
         setTableColumn();
 
-
-
         invoiceType.getItems().addAll(AddCustomer.CusType.WholeSale.toString(), AddCustomer.CusType.Retailer.toString());
         invoiceType.setValue(AddCustomer.CusType.Retailer.toString());
 
@@ -90,7 +85,7 @@ public class Sell {
         AutoCompletionBinding<String> binding = TextFields.bindAutoCompletion(cusTxt, dataCustomerName);
         binding.setOnAutoCompleted((AutoCompletionBinding.AutoCompletionEvent<String> event) -> {
             Customer curCustomer = converterCustomer.fromString(event.getCompletion());
-            invoice.setCustomer(curCustomer);
+            invoice.setTrader(curCustomer);
             adrsTxt.setText(curCustomer.getAddress());
             emailTxt.setText(curCustomer.getEmail());
             phnTxt.setText(curCustomer.getPhone());
@@ -111,9 +106,6 @@ public class Sell {
             }
         });
         addOnAction();
-
-
-
     }
 
 
@@ -128,7 +120,7 @@ public class Sell {
             result.ifPresent(model -> {
                 //get product by name and add to the invoice data
                 addProduct = converterProduct.fromString(model.getName());
-                invoice.addData(new Invoice.Item(++serial, addProduct, invoice.getCustomer().isRetailer(), model.getQuantity()));
+                invoice.addData(new Item(++serial, addProduct, invoice.getTrader().isRetailer(), model.getQuantity()));
                 addProduct = null;
 
                 //calculate the invoice price and update the price in textField
@@ -158,14 +150,14 @@ public class Sell {
             priceCalculate(null);
 
             //setting due to the customer
-            Customer customer = invoice.getCustomer();
+            Customer customer = invoice.getTrader();
             customer.setDue(customer.getDue()+Double.parseDouble(dueTxt.getText()));
 
             //adding data to invoice before saving
             invoice.setDate(datePick.getEditor().getText());
             invoice.setTransactionID(invoiceTxt.getText());
-            invoice.setSoldBy(soldByTxt.getText());
-            Transaction transaction = new Transaction(0, invoice.getCustomer().getId(),Double.parseDouble(paidTxt.getText()),invoice.getDate() ,invoice.getTransactionID(), invoice.getSoldBy());
+            invoice.setAuthorityName(soldByTxt.getText());
+            Transaction transaction = new Transaction(0, invoice.getTrader().getId(),Double.parseDouble(paidTxt.getText()),invoice.getDate() ,invoice.getTransactionID(), invoice.getAuthorityName());
 
             //lowering the opacity when saving to database and sowing message
             grdPan.setOpacity(.5);
@@ -209,19 +201,19 @@ public class Sell {
     }
 
     private void setTableColumn(){
-        TableColumn<Invoice.Item, Integer> serialColumn = new TableColumn<>("SL");
-        serialColumn.setCellValueFactory(new PropertyValueFactory<Invoice.Item, Integer>("serial"));
+        TableColumn<Item, Integer> serialColumn = new TableColumn<>("SL");
+        serialColumn.setCellValueFactory(new PropertyValueFactory<>("serial"));
 
-        TableColumn<Invoice.Item, String> itemDesc = new TableColumn<>("Item Description");
-        itemDesc.setCellValueFactory(new PropertyValueFactory<Invoice.Item, String>("description"));
+        TableColumn<Item, String> itemDesc = new TableColumn<>("Item Description");
+        itemDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
 
 
-        TableColumn<Invoice.Item, Integer> quantityColumn = new TableColumn<>("Quantity");
-        quantityColumn.setCellValueFactory(new PropertyValueFactory<Invoice.Item, Integer>("quantity"));
+        TableColumn<Item, Integer> quantityColumn = new TableColumn<>("Quantity");
+        quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         IntegerStringConverter integerStringConverter = new IntegerStringConverter();
-        quantityColumn.setCellFactory(TextFieldTableCell.<Invoice.Item, Integer>forTableColumn(integerStringConverter));
+        quantityColumn.setCellFactory(TextFieldTableCell.forTableColumn(integerStringConverter));
         quantityColumn.setOnEditCommit(event -> {
-            Invoice.Item data = event.getRowValue();
+            Item data = event.getRowValue();
 
             invoice.getData().get(data.getSerial()-1).setQuantity(event.getNewValue());
             invoice.getData().get(data.getSerial()-1).calTotal();
@@ -231,11 +223,11 @@ public class Sell {
             itemTable.getItems().setAll(invoice.getData());
         });
 
-        TableColumn<Invoice.Item, Double> rateColumn = new TableColumn<>("Rate");
-        rateColumn.setCellValueFactory(new PropertyValueFactory<Invoice.Item, Double>("rate"));
+        TableColumn<Item, Double> rateColumn = new TableColumn<>("Rate");
+        rateColumn.setCellValueFactory(new PropertyValueFactory<>("rate"));
 
-        TableColumn<Invoice.Item, Double> totalColumn = new TableColumn<>("Total");
-        totalColumn.setCellValueFactory(new PropertyValueFactory<Invoice.Item, Double>("total"));
+        TableColumn<Item, Double> totalColumn = new TableColumn<>("Total");
+        totalColumn.setCellValueFactory(new PropertyValueFactory<>("total"));
 
         itemTable.getColumns().addAll(serialColumn, itemDesc, quantityColumn, rateColumn, totalColumn);
 

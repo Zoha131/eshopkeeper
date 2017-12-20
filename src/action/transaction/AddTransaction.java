@@ -10,7 +10,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import model.Customer;
-import model.CustomerStringConverter;
+import model.ModelStringConverter;
 import model.Transaction;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
@@ -26,7 +26,7 @@ public class AddTransaction {
 
     private ObservableList<Customer> dataCustomer;
     private ObservableList<String> dataCustomerName;
-    private CustomerStringConverter customerStringConverter;
+    private ModelStringConverter<Customer> customerStringConverter;
 
     private Transaction transaction;
     private Customer customer;
@@ -37,7 +37,7 @@ public class AddTransaction {
         for(Customer cus: dataCustomer){
             dataCustomerName.add(cus.getName());
         }
-        customerStringConverter = new CustomerStringConverter(dataCustomer);
+        customerStringConverter = new ModelStringConverter(dataCustomer);
 
         trType.getItems().setAll("Customer", "Supplier");
         trType.setValue("Customer");
@@ -66,8 +66,13 @@ public class AddTransaction {
             transaction.setAmount(Double.parseDouble(amntTxt.getText()));
             //todo-me to add validation rule
 
+            Double due = customer.getDue();
+            due = due-transaction.getAmount();
+            customer.setDue(due);
+
             boolean isSaved = DataHelper.insertSellTransaction(transaction);
-            if(isSaved){
+            boolean isUpdated = DataHelper.updateData("customer", "due", customer.getDue(), customer.getId());
+            if(isSaved && isUpdated){
                 clear();
                 nameTxt.requestFocus();
             }

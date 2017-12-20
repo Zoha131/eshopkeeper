@@ -89,7 +89,7 @@ public class EditProduct {
         });
 
 
-        TableColumn<Product, Double> prate = new TableColumn<>("Purchase Rate");
+        TableColumn<Product, Double> prate = new TableColumn<>("PurchaseView Rate");
         prate.setCellValueFactory(new PropertyValueFactory<Product, Double>("prate"));
         prate.setCellFactory(TextFieldTableCell.<Product, Double>forTableColumn(new DoubleStringConverter()));
         prate.setId("prate");

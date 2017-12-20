@@ -292,6 +292,8 @@ public class DataHelper {
         query.append(" INTEGER NOT NULL, ");
         query.append(sellTransaction.amount);
         query.append(" DOUBLE NOT NULL, ");
+        query.append(sellTransaction.takenBy);
+        query.append(" TEXT NOT NULL, ");
         query.append(sellTransaction.date);
         query.append(" TEXT NOT NULL ) ");
 
@@ -299,9 +301,9 @@ public class DataHelper {
 
     }
     public static boolean insertSellTransaction(Transaction transaction){
-        String query = String.format("INSERT INTO sellTransaction ( %s, %s, %s, %s) VALUES (?,?,?,?)",
+        String query = String.format("INSERT INTO sellTransaction ( %s, %s, %s, %s, %s) VALUES (?,?,?,?,?)",
                 sellTransaction.transactionId, sellTransaction.customerId,
-                sellTransaction.amount, sellTransaction.date);
+                sellTransaction.amount, sellTransaction.date, sellTransaction.takenBy);
 
         try {
             Connection conn = getConnection();
@@ -310,6 +312,7 @@ public class DataHelper {
             prep.setInt(2, transaction.getCustomerId());
             prep.setDouble(3, transaction.getAmount());
             prep.setString(4, transaction.getDate());
+            prep.setString(5, transaction.getTakenBy());
             prep.execute();
 
             conn.close();
@@ -344,7 +347,7 @@ public class DataHelper {
 
         return execute(query.toString());
     }
-    public static boolean insertSell(Invoice invoice) {
+    public static boolean insertSell(Invoice<Customer> invoice) {
         try {
             String query = String.format("INSERT INTO sell ( %s, %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?,?)",
                     sell.customerId, sell.productID, sell.rate, sell.quantity,
@@ -352,15 +355,15 @@ public class DataHelper {
 
             Connection conn = getConnection();
 
-            for (Invoice.Item item : invoice.getData()) {
+            for (Item item : invoice.getData()) {
                 PreparedStatement prep = conn.prepareStatement(query);
-                prep.setInt(1, invoice.getCustomer().getId());
+                prep.setInt(1, invoice.getTrader().getId());
                 prep.setInt(2, item.getProduct().getId());
                 prep.setDouble(3, item.getRate());
                 prep.setInt(4, item.getQuantity());
                 prep.setString(5, invoice.getDate());
                 prep.setString(6, invoice.getTransactionID());
-                prep.setString(7, invoice.getSoldBy());
+                prep.setString(7, invoice.getAuthorityName());
                 prep.execute();
             }
 
@@ -369,6 +372,34 @@ public class DataHelper {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
+        }
+    }
+    public static ObservableList<SellHistory> getSellHistory(int customerId){
+        ObservableList<SellHistory> data = FXCollections.observableArrayList();
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT name, code, company, date, rate, quantity, soldby, product.id as productId ");
+        query.append("FROM sell, product ");
+        query.append("WHERE sell.productID = product.id AND sell.customerId = ? ");
+        query.append("ORDER BY sell.id ");
+        try {
+            PreparedStatement prep = conn.prepareStatement(query.toString());
+            prep.setInt(1, customerId);
+            ResultSet res = prep.executeQuery();
+            while (res.next()){
+                SellHistory raw = new SellHistory(
+                        res.getString(product.name.toString()) +" ("+ res.getString(product.code.toString()) + ")",
+                        res.getString(product.company.toString()),
+                        res.getString(sell.soldby.toString()),
+                        res.getString(sell.date.toString()),
+                        res.getDouble(sell.rate.toString()),
+                        res.getInt(sell.quantity.toString()),
+                        res.getInt("productId"));
+                data.add(raw);
+            }
+            return data;
+        }catch (Exception e){
+            System.out.println(e);
+            return null;
         }
     }
 
@@ -449,7 +480,8 @@ public class DataHelper {
         customerId,
         amount,
         date,
-        transactionId
+        transactionId,
+        takenBy
     }
     public static enum sell {
         id,

@@ -55,7 +55,7 @@ public class LoginController implements Initializable {
 
     void loadMain() {
         try {
-            Parent parent = FXMLLoader.load(getClass().getResource("/action/sell/sell.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/action/sell/sellView.fxml"));
             ScrollPane scrollPane = new ScrollPane();
             scrollPane.setId("scroll");
             scrollPane.setContent(parent);

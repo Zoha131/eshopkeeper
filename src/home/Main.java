@@ -3,12 +3,10 @@ package home;
 import data_helper.DataHelper;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -71,8 +69,9 @@ public class Main extends Application {
         Menu views = new Menu("Action");
         MenuItem add = new MenuItem("ADD");
         MenuItem edit = new MenuItem("Edit");
-        MenuItem sell = new MenuItem("Sell");
+        MenuItem sell = new MenuItem("SellView");
         MenuItem transaction = new MenuItem("Transaction");
+        MenuItem sellCustomerHistory = new MenuItem("Cus History");
         MenuItem logout = new MenuItem("Log Out");
 
         add.setOnAction(event -> {
@@ -102,7 +101,7 @@ public class Main extends Application {
 
         sell.setOnAction(event -> {
             try{
-                Parent parent = FXMLLoader.load(getClass().getResource("/action/sell/sell.fxml"));
+                Parent parent = FXMLLoader.load(getClass().getResource("/action/sell/sellView.fxml"));
                 ScrollPane scrollPane = new ScrollPane();
                 scrollPane.setId("scroll");
                 scrollPane.setContent(parent);
@@ -127,7 +126,22 @@ public class Main extends Application {
                 }
 
             }catch (Exception e){
-                System.out.println("error " + e);
+                System.out.println("error " + e.getStackTrace());
+            }
+        });
+
+        sellCustomerHistory.setOnAction(event -> {
+            try{
+                Parent parent = FXMLLoader.load(getClass().getResource("/history/sell/customer/customerHistory.fxml"));
+                System.out.println("worked");
+                boolean sameView = Main.getRoot().getCenter().getId().equals(parent.getId());
+
+                if(!sameView){
+                    Main.getRoot().setCenter(parent);
+                }
+
+            }catch (Exception e){
+                System.out.println("Main class: error " + e);
             }
         });
 
@@ -145,7 +159,7 @@ public class Main extends Application {
             }
         });
 
-        views.getItems().addAll(add,edit,sell,transaction, logout);
+        views.getItems().addAll(add,edit,sell,transaction,sellCustomerHistory, logout);
 
         Menu help = new Menu("Help");
         MenuItem about = new MenuItem("About");
