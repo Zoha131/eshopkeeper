@@ -46,7 +46,7 @@ public class Invoice<T> {
         this.trader = trader;
     }
 
-    public List<Item> getData() {
+    public ObservableList<Item> getData() {
         return data;
     }
 

@@ -21,7 +21,32 @@ public class Item{
         this.description = product.getName()+" ("+product.getCode()+")";
     }
 
+    public Item(int serial, Product product, double prate, int quantity) {
+        this.serial = serial;
+        this.product = product;
+        this.quantity = quantity;
+        this.rate = prate;
+        this.total = quantity* rate;
+        this.description = product.getName()+" ("+product.getCode()+")";
+    }
+
     public Item() {
+    }
+
+    public double getRrate(){
+        return product.getRrate();
+    }
+
+    public void setRrate(double rrate){
+        product.setRrate(rrate);
+    }
+
+    public double getWrate(){
+        return product.getWrate();
+    }
+
+    public void setWrate(double wrate){
+        product.setWrate(wrate);
     }
 
     public double getRate() {

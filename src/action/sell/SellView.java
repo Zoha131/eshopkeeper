@@ -1,23 +1,29 @@
 package action.sell;
 
 import add.customer.AddCustomer;
+import add.product.AddProduct;
 import converter.CashWordConverter;
 import converter.DateStringConverter;
 import converter.ModelStringConverter;
 import data_helper.DataHelper;
+import dialog.AddProductDialog;
 import home.Main;
 import home.Toast;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.print.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.InputMethodEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.transform.Scale;
 import javafx.util.converter.IntegerStringConverter;
@@ -30,19 +36,18 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class SellView {
-    @FXML    TextField cusTxt, adrsTxt, phnTxt, emailTxt, invoiceTxt, soldByTxt,priceTxt, vatTxt, totalTxt, paidTxt, dueTxt;
+    @FXML    TextField cusTxt, adrsTxt, phnTxt, emailTxt, invoiceTxt, soldByTxt,priceTxt, vatTxt, totalTxt, paidTxt, dueTxt, strTxt;
     @FXML    TableView<Item> itemTable;
     @FXML    ComboBox<String> invoiceType;
     @FXML    DatePicker datePick;
-    @FXML    Button saveBtn, addBtn, calcBtn, printBtn;
+    @FXML    Button saveBtn, addBtn, clrBtn, printBtn;
     @FXML    GridPane grdPan;
-    @FXML    Label amountWordLBL;
+    @FXML    Label strLbl;
 
     private ScrollPane scrollPane;
 
-    private final double GRID_HEIGHT=1000;
-    private int scrollTime = 0;
-    private boolean isScrollable = true;
+    private final double GRID_HEIGHT=750;
+    private double tableHeight = 50;
 
     ObservableList<String> dataCustomerName, dataProductName;
     ModelStringConverter<Customer> converterCustomer;
@@ -54,21 +59,25 @@ public class SellView {
     private Invoice<Customer> invoice;
     private int serial=0;
     private Product addProduct;
-    private double tableHeight = 50;
     private DateStringConverter dateStringConverter;
+    private boolean isRetailer=true;
 
 
     public void initialize() {
 
+        invoiceTxt.setText(UUID.randomUUID().toString());
+
         dateStringConverter = new DateStringConverter();
         datePick.setConverter(dateStringConverter);
+        datePick.setValue(LocalDate.now());
 
         dataCustomer = DataHelper.getCustomer();
         dataCustomerName = FXCollections.observableArrayList();
+        converterCustomer = new ModelStringConverter<>(dataCustomer);
         for (Customer cus : dataCustomer) {
             dataCustomerName.add(cus.getName());
         }
-        converterCustomer = new ModelStringConverter<>(dataCustomer);
+
 
         dataProduct = DataHelper.getProduct();
         dataProductName = FXCollections.observableArrayList();
@@ -83,47 +92,60 @@ public class SellView {
 
         invoiceType.getItems().addAll(AddCustomer.CusType.WholeSale.toString(), AddCustomer.CusType.Retailer.toString());
         invoiceType.setValue(AddCustomer.CusType.Retailer.toString());
+        invoiceType.setOnAction(event -> {
+            if(invoiceType.getSelectionModel().getSelectedItem().equals(AddCustomer.CusType.WholeSale.toString())){
+                strLbl.setOpacity(1);
+                strTxt.setOpacity(1);
+                isRetailer=false;
+            }
+            else {
+                strLbl.setOpacity(0);
+                strTxt.setOpacity(0);
+                isRetailer=true;
+            }
+        });
 
 
         AutoCompletionBinding<String> binding = TextFields.bindAutoCompletion(cusTxt, dataCustomerName);
         binding.setOnAutoCompleted((AutoCompletionBinding.AutoCompletionEvent<String> event) -> {
             Customer curCustomer = converterCustomer.fromString(event.getCompletion());
+            setEditable(false);
             invoice.setTrader(curCustomer);
             adrsTxt.setText(curCustomer.getAddress());
             emailTxt.setText(curCustomer.getEmail());
             phnTxt.setText(curCustomer.getPhone());
-            invoiceTxt.setText(UUID.randomUUID().toString());
-            datePick.setValue(LocalDate.now());
+
             if(curCustomer.getType().equals(AddCustomer.CusType.Retailer.toString())) {
                 invoiceType.setValue(AddCustomer.CusType.Retailer.toString());
             }
             else{
                 invoiceType.setValue(AddCustomer.CusType.WholeSale.toString());
-            }
-
-            //to scroll below to show to add button
-            scrollPane =(ScrollPane) Main.getRoot().getCenter();
-            if(isScrollable){
-                scrollPane.setVvalue(.4);
-                isScrollable = false;
+                strTxt.setText(curCustomer.getStore());
             }
         });
         addOnAction();
     }
 
+    //this function will be called from the loader
+    public void setScrollPane(ScrollPane scrollPane) {
+        this.scrollPane = scrollPane;
+    }
+
 
     private void addOnAction() {
         addBtn.disableProperty().bind(Bindings.isEmpty(cusTxt.textProperty()));
+        saveBtn.disableProperty().bind(Bindings.isEmpty(paidTxt.textProperty()));
+        printBtn.disableProperty().bind(Bindings.isEmpty(paidTxt.textProperty()));
         addBtn.setOnAction((ActionEvent event) -> {
 
-            AddProductDialog dialog = new AddProductDialog(dataProductName);
+            Dialog<AddProductDialog.DialogModel> dialog = AddProductDialog.getSellDialogue(dataProductName);
 
-            Optional<AddProductDialog.Model> result = dialog.showAndWait();
+            Optional<AddProductDialog.DialogModel> result = dialog.showAndWait();
 
-            result.ifPresent(model -> {
+            result.ifPresent(dialogModel -> {
                 //get product by name and add to the invoice data
-                addProduct = converterProduct.fromString(model.getName());
-                invoice.addData(new Item(++serial, addProduct, invoice.getTrader().isRetailer(), model.getQuantity()));
+                addProduct = converterProduct.fromString(dialogModel.getName());
+                invoice.addData(new Item(++serial, addProduct, isRetailer, dialogModel.getQuantity()));
                 addProduct = null;
 
                 //calculate the invoice price and update the price in textField
@@ -134,21 +156,34 @@ public class SellView {
 
                 //enlarge the height for better view
                 tableHeight = tableHeight+30;
-                itemTable.setMaxHeight(tableHeight);
                 grdPan.setMinHeight(tableHeight+GRID_HEIGHT);
+                itemTable.setMaxHeight(tableHeight);
 
                 //scrollpane will be updated two times. and then the table will be fixed.
-                if(scrollTime<2){
-                    scrollPane.setVvalue(scrollPane.getVmax());
-                    scrollTime++;
-                }
+                scrollPane.setVvalue(.6);
             });
         });
-        calcBtn.setOnAction(this::priceCalculate);
         printBtn.setOnAction(event -> {
             printNode(grdPan);
         });
         saveBtn.setOnAction((event -> {
+
+            if(invoice.getTrader()==null){
+                Customer customer = new Customer(0,0,
+                        cusTxt.getText(),
+                        strTxt.getText(),
+                        adrsTxt.getText(),
+                        phnTxt.getText(),
+                        emailTxt.getText(),
+                        invoiceType.getSelectionModel().getSelectedItem());
+                DataHelper.insertCustomer(customer);
+
+                //todo-me this is inefficient. need to make this efficient
+                dataCustomer = DataHelper.getCustomer();
+                converterCustomer.setData(dataCustomer);
+                invoice.setTrader(converterCustomer.fromString(customer.getName()));
+            }
+
             //calucating price and due before saving in database
             priceCalculate(null);
 
@@ -160,7 +195,7 @@ public class SellView {
             invoice.setDate(datePick.getEditor().getText());
             invoice.setTransactionID(invoiceTxt.getText());
             invoice.setAuthorityName(soldByTxt.getText());
-            Transaction transaction = new Transaction(0, invoice.getTrader().getId(),Double.parseDouble(paidTxt.getText()),invoice.getDate() ,invoice.getTransactionID(), invoice.getAuthorityName());
+            Transaction transaction = new Transaction(0, invoice.getTrader().getId(), invoice.getPrice() ,Double.parseDouble(paidTxt.getText()),invoice.getDate() ,invoice.getTransactionID(), invoice.getAuthorityName());
 
             //lowering the opacity when saving to database and sowing message
             grdPan.setOpacity(.5);
@@ -172,35 +207,40 @@ public class SellView {
                 boolean isUpdated = DataHelper.updateData("customer", "due", customer.getDue(), customer.getId());
                 if(isSaved && isUpdated){
                     Platform.runLater(()->{
-                        allClear();
-                        scrollPane.setVvalue(.32);
                         grdPan.setOpacity(1);
+                        scrollPane.setVvalue(0);
                     });
                 }
             });
             t1.start();
+            allClear();
         }));
+        clrBtn.setOnAction(event -> {
+            allClear();
+        });
     }
 
     //method to clear all the textfield and tableview after save to databes
     private void allClear(){
         cusTxt.clear();
-        dueTxt.setText("0.00");
-        totalTxt.setText("0.00");
-        vatTxt.setText("0.00");
+        dueTxt.clear();
+        totalTxt.clear();
+        vatTxt.clear();
         soldByTxt.clear();
         phnTxt.clear();
-        paidTxt.setText("0.00");
+        paidTxt.clear();
         invoiceTxt.clear();
         emailTxt.clear();
         adrsTxt.clear();
-        priceTxt.setText("0.00");
-        amountWordLBL.setText("");
+        priceTxt.clear();
+        invoiceTxt.setText(UUID.randomUUID().toString());
+        setEditable(true);
         invoice = new Invoice();
         itemTable.getItems().setAll(invoice.getData());
         tableHeight = 50;
         itemTable.setMaxHeight(tableHeight);
         grdPan.setMinHeight(tableHeight+GRID_HEIGHT);
+        scrollPane.setVvalue(0);
     }
 
     private void setTableColumn(){
@@ -242,7 +282,7 @@ public class SellView {
         itemTable.setEditable(true);
     }
 
-    public void printNode(final Node node){
+    private void printNode(final Node node){
         Printer printer = Printer.getDefaultPrinter();
         PageLayout pageLayout = printer.createPageLayout(Paper.A4, PageOrientation.PORTRAIT, Printer.MarginType.HARDWARE_MINIMUM);
         PrinterAttributes attr = printer.getPrinterAttributes();
@@ -265,10 +305,16 @@ public class SellView {
         setBtnVisible(true);
     }
 
+    private void setEditable(boolean editable){
+        adrsTxt.setEditable(editable);
+        phnTxt.setEditable(editable);
+        emailTxt.setEditable(editable);
+        strTxt.setEditable(editable);
+    }
+
     void setBtnVisible(boolean p){
         saveBtn.setVisible(p);
         addBtn.setVisible(p);
-        calcBtn.setVisible(p);
         printBtn.setVisible(p);
     }
 
@@ -277,7 +323,6 @@ public class SellView {
         double paid = Double.parseDouble(paidTxt.getText());
         double due = price - paid;
         dueTxt.setText(String.valueOf(due));
-        amountWordLBL.setText(CashWordConverter.doubleConvert(invoice.getPrice()));
     }
 
 

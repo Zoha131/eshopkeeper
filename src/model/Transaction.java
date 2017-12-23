@@ -2,13 +2,23 @@ package model;
 
 public class Transaction {
     private int id, customerId;
-    private double amount;
+    private double paid, total;
     private String date, transactionId, takenBy;
 
-    public Transaction(int id, int customerId, double amount, String date, String transactionId, String takenBy) {
+    public Transaction(int id, int customerId, double paid, String date, String transactionId, String takenBy) {
         this.id = id;
         this.customerId = customerId;
-        this.amount = amount;
+        this.paid = paid;
+        this.date = date;
+        this.transactionId = transactionId;
+        this.takenBy = takenBy;
+    }
+
+    public Transaction(int id, int customerId, double total, double paid, String date, String transactionId, String takenBy) {
+        this.id = id;
+        this.customerId = customerId;
+        this.paid = paid;
+        this.total = total;
         this.date = date;
         this.transactionId = transactionId;
         this.takenBy = takenBy;
@@ -33,12 +43,20 @@ public class Transaction {
         this.customerId = customerId;
     }
 
-    public double getAmount() {
-        return amount;
+    public double getTotal() {
+        return total;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
+    public double getPaid() {
+        return paid;
+    }
+
+    public void setPaid(double paid) {
+        this.paid = paid;
     }
 
     public String getDate() {

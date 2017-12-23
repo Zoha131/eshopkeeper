@@ -1,7 +1,6 @@
 package action.purchase;
 
-import action.sell.AddProductDialog;
-import add.customer.AddCustomer;
+import dialog.AddProductDialog;
 import converter.DateStringConverter;
 import converter.ModelStringConverter;
 import data_helper.DataHelper;
@@ -9,25 +8,23 @@ import home.Main;
 import home.Toast;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
-import javafx.util.StringConverter;
+import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
-import javafx.util.converter.NumberStringConverter;
 import model.*;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,13 +32,14 @@ import java.util.UUID;
 public class PurchaseView {
     @FXML TextField supNameTxt, strNameTxt, adrsTxt, phnTxt, idTxt, purchasedByTxt, totalTxt, paidTxt, dueTxt;
     @FXML DatePicker datePick;
-    @FXML Button addBtn, addNewBtn, saveBtn;
+    @FXML Button addBtn, addNewBtn, saveBtn,clrBtn;
     @FXML GridPane purInvoiceGrid;
     @FXML TableView<Item> itemTable;
 
     private ScrollPane scrollPane;
 
     private final double GRID_HEIGHT=600;
+    private double tableHeight = 50;
 
     ObservableList<Supplier> dataSupplier;
     ModelStringConverter<Supplier> converterSupplier;
@@ -55,15 +53,18 @@ public class PurchaseView {
     private Invoice<Supplier> invoice;
     private int serial=0;
     private Product addProduct;
-    private double tableHeight = 50;
     private DateStringConverter dateStringConverter;
 
 
 
     public void initialize(){
 
+        idTxt.setText(UUID.randomUUID().toString());
+
         dateStringConverter = new DateStringConverter();
         datePick.setConverter(dateStringConverter);
+        datePick.setValue(LocalDate.now());
+
         // to update the dueTxt with total and paid text
         paidTxt.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue)-> {
             double paid = 0;
@@ -102,49 +103,113 @@ public class PurchaseView {
             adrsTxt.setText(curSupplier.getAddress());
             strNameTxt.setText(curSupplier.getStore());
             phnTxt.setText(curSupplier.getPhone());
-            idTxt.setText(UUID.randomUUID().toString());
-            datePick.setValue(LocalDate.now());
 
-            //to scroll below to show to add button
-            scrollPane =(ScrollPane) Main.getRoot().getCenter();
+            //disable the textfields
+            setTextEditable(false);
+
         });
         addOnAction();
+    }
 
+    //this function will be called from the loader
+    public void setScrollPane(ScrollPane scrollPane) {
+        this.scrollPane = scrollPane;
     }
 
     private void addOnAction() {
         addBtn.disableProperty().bind(Bindings.isEmpty(supNameTxt.textProperty()));
         addNewBtn.disableProperty().bind(Bindings.isEmpty(supNameTxt.textProperty()));
+        saveBtn.disableProperty().bind(Bindings.isEmpty(totalTxt.textProperty()).or(Bindings.isEmpty(paidTxt.textProperty())));
+
         addBtn.setOnAction((ActionEvent event) -> {
 
-            AddProductDialog dialog = new AddProductDialog(dataProductName);
+            Dialog<AddProductDialog.DialogModel> dialog = AddProductDialog.getPurchaseDialog(dataProductName);
 
-            Optional<AddProductDialog.Model> result = dialog.showAndWait();
+            Optional<AddProductDialog.DialogModel> result = dialog.showAndWait();
 
-            result.ifPresent(model -> {
-                //get product by name and add to the invoice data
-                addProduct = converterProduct.fromString(model.getName());
-                invoice.addData(new Item(++serial, addProduct, false, model.getQuantity()));
-                addProduct = null;
+            result.ifPresent(this::addConsumer);
+        });
+        addNewBtn.setOnAction((ActionEvent event) -> {
 
-                //calculate the invoice price and update the price in textField
-                invoice.calPrice();
-                totalTxt.setText(String.valueOf(invoice.getPrice()));
-                itemTable.getItems().setAll(invoice.getData());
+            Dialog<AddProductDialog.DialogModel> dialog = AddProductDialog.getNewProductDialog();
 
-                //enlarge the height for better view
-                tableHeight = tableHeight+30;
-                purInvoiceGrid.setMinHeight(tableHeight+GRID_HEIGHT);
-                itemTable.setMinHeight(tableHeight);
+            Optional<AddProductDialog.DialogModel> result = dialog.showAndWait();
 
-                //scrollpane will be updated
-                scrollPane.setVvalue(scrollPane.getVmax());
+            result.ifPresent(dialogModel -> {
+                //updating dataProduct as we insert new product which was not available in the database before
+                //todo-me this is inefficient. need to make this efficient
+                dataProduct = DataHelper.getProduct();
+                converterProduct.setData(dataProduct);
+
+                addConsumer(dialogModel);
             });
         });
-
         saveBtn.setOnAction(event -> {
-            System.out.println("save hoise re sagla");
+            if(invoice.getTrader() == null){
+                Supplier supplier= new Supplier(0, 0,
+                        supNameTxt.getText(),
+                        strNameTxt.getText(),
+                        adrsTxt.getText(),
+                        phnTxt.getText(),
+                        "default@domain.com");
+                DataHelper.insertSupplier(supplier);
+
+                //todo-me this is inefficient. need to make this efficient
+                dataSupplier = DataHelper.getSupplier();
+                converterSupplier.setData(dataSupplier);
+                invoice.setTrader(converterSupplier.fromString(supplier.getName()));
+            }
+
+            //setting due to the supplier
+            Supplier supplier = invoice.getTrader();
+            supplier.setDue(supplier.getDue()+Double.parseDouble(dueTxt.getText()));
+
+            //adding data to invoice before saving
+            invoice.setDate(datePick.getEditor().getText());
+            invoice.setTransactionID(idTxt.getText());
+            invoice.setAuthorityName(purchasedByTxt.getText());
+            Transaction transaction = new Transaction(0, invoice.getTrader().getId(), invoice.getPrice(), Double.parseDouble(paidTxt.getText()),invoice.getDate(), invoice.getTransactionID(), invoice.getAuthorityName());
+
+            //lowering the opacity when saving to database and sowing message
+            purInvoiceGrid.setOpacity(.5);
+            Toast.makeText(Main.getMainStage(), "Saving", 500, 200, 200);
+
+            //adding the data in another thread to have better UI experience
+            Thread t1 = new Thread(()-> {
+                boolean isSaved = DataHelper.insertPurchase(invoice) && DataHelper.insertPurchaseTransaction(transaction);
+                boolean isUpdated = DataHelper.updateData("supplier", "due", supplier.getDue(), supplier.getId());
+                if(isSaved && isUpdated){
+                    Platform.runLater(()->{
+                        purInvoiceGrid.setOpacity(1);
+                        scrollPane.setVvalue(0);
+                    });
+                }
+            });
+            t1.start();
+            clearAll(null);
         });
+
+        clrBtn.setOnAction(this::clearAll);
+    }
+
+    private void  addConsumer(AddProductDialog.DialogModel dialogModel){
+        //get product by name and add to the invoice data
+        addProduct = converterProduct.fromString(dialogModel.getName());
+        invoice.addData(new Item(++serial, addProduct, dialogModel.getPrate(), dialogModel.getQuantity()));
+        addProduct = null;
+
+        //calculate the invoice price and update the price in textField
+        invoice.calPrice();
+        totalTxt.setText(String.valueOf(invoice.getPrice()));
+        itemTable.setItems(invoice.getData());
+
+        //enlarge the height for better view
+        tableHeight = tableHeight+30;
+        purInvoiceGrid.setMinHeight(tableHeight+GRID_HEIGHT);
+        itemTable.setMinHeight(tableHeight);
+
+        //scrollpane will be updated
+        scrollPane.setVvalue(1);
     }
 
     private void setTableColumn(){
@@ -162,26 +227,114 @@ public class PurchaseView {
         quantityColumn.setOnEditCommit(event -> {
             Item data = event.getRowValue();
 
-            invoice.getData().get(data.getSerial()-1).setQuantity(event.getNewValue());
-            invoice.getData().get(data.getSerial()-1).calTotal();
+            Item invoiceItem = invoice.getData().get(data.getSerial()-1);
+            invoiceItem.setQuantity(event.getNewValue());
+            invoiceItem.calTotal();
+
             invoice.calPrice();
+
             totalTxt.setText(String.valueOf(invoice.getPrice()));
-            itemTable.getItems().setAll(invoice.getData());
+
+            itemTable.setItems(invoice.getData());
         });
+
+        DoubleStringConverter doubleStringConverter = new DoubleStringConverter();
 
         TableColumn<Item, Double> rateColumn = new TableColumn<>("Rate");
         rateColumn.setCellValueFactory(new PropertyValueFactory<>("rate"));
+        rateColumn.setCellFactory(TextFieldTableCell.forTableColumn(doubleStringConverter));
+        rateColumn.setOnEditCommit(event -> {
+            Item data = event.getRowValue();
+
+            Item invoiceItem = invoice.getData().get(data.getSerial()-1);
+            invoiceItem.setRate(event.getNewValue());
+            invoiceItem.calTotal();
+
+            invoice.calPrice();
+
+            totalTxt.setText(String.valueOf(invoice.getPrice()));
+
+            itemTable.setItems(invoice.getData());
+            //todo-me Tab->next edit cell Enter->commit edit
+        });
+
+        TableColumn<Item, Double> wrateColumn = new TableColumn<>("Wh. Rate");
+        wrateColumn.setCellValueFactory(new PropertyValueFactory<>("wrate"));
+        wrateColumn.setCellFactory(TextFieldTableCell.forTableColumn(doubleStringConverter));
+        wrateColumn.setOnEditCommit(event -> {
+            Item data = event.getRowValue();
+
+            Item invoiceItem = invoice.getData().get(data.getSerial()-1);
+            invoiceItem.setWrate(event.getNewValue());
+            invoiceItem.calTotal();
+
+            invoice.calPrice();
+
+            totalTxt.setText(String.valueOf(invoice.getPrice()));
+
+            itemTable.setItems(invoice.getData());
+        });
+
+        TableColumn<Item, Double> rrateColumn = new TableColumn<>("Ret. Rate");
+        rrateColumn.setCellValueFactory(new PropertyValueFactory<>("rrate"));
+        rrateColumn.setCellFactory(TextFieldTableCell.forTableColumn(doubleStringConverter));
+        rrateColumn.setOnEditCommit(event -> {
+            Item data = event.getRowValue();
+
+            Item invoiceItem = invoice.getData().get(data.getSerial()-1);
+            invoiceItem.setRrate(event.getNewValue());
+            invoiceItem.calTotal();
+
+            invoice.calPrice();
+
+            totalTxt.setText(String.valueOf(invoice.getPrice()));
+
+            itemTable.setItems(invoice.getData());
+        });
 
         TableColumn<Item, Double> totalColumn = new TableColumn<>("Total");
         totalColumn.setCellValueFactory(new PropertyValueFactory<>("total"));
 
-        itemTable.getColumns().addAll(serialColumn, itemDesc, quantityColumn, rateColumn, totalColumn);
+        itemTable.getColumns().addAll(serialColumn, itemDesc, quantityColumn, rateColumn,rrateColumn,wrateColumn, totalColumn);
 
-        Double descMinWidth = 940 - (serialColumn.getWidth()+ quantityColumn.getWidth()+rateColumn.getWidth()+totalColumn.getWidth());
+        Double descMinWidth = 940 - (serialColumn.getWidth()+ quantityColumn.getWidth()+rateColumn.getWidth()+totalColumn.getWidth()+rrateColumn.getWidth()+wrateColumn.getWidth());
         itemDesc.setMinWidth(descMinWidth);
 
         itemTable.setMaxHeight(tableHeight);
         itemTable.setFixedCellSize(30);
         itemTable.setEditable(true);
     }
+
+    private void setTextEditable(boolean editable){
+        supNameTxt.setEditable(editable);
+        strNameTxt.setEditable(editable);
+        adrsTxt.setEditable(editable);
+        phnTxt.setEditable(editable);
+    }
+
+    private void clearAll(ActionEvent event) {
+        supNameTxt.clear();
+        strNameTxt.clear();
+        adrsTxt.clear();
+        phnTxt.clear();
+        idTxt.clear();
+        totalTxt.clear();
+        paidTxt.clear();
+        dueTxt.clear();
+        itemTable.setItems(null);
+        invoice = new Invoice<>();
+
+        //enlarge the height for better view
+        tableHeight = 50;
+        purInvoiceGrid.setMinHeight(tableHeight+GRID_HEIGHT);
+        itemTable.setMinHeight(tableHeight);
+
+        //scrollpane will be updated
+        scrollPane.setVvalue(0);
+
+        setTextEditable(true);
+        idTxt.setText(UUID.randomUUID().toString());
+        supNameTxt.requestFocus();
+    }
+
 }

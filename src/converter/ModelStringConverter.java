@@ -13,6 +13,10 @@ public class ModelStringConverter<T extends Model> extends StringConverter<T> {
         this.data = data;
     }
 
+    public void setData(List<T> data) {
+        this.data = data;
+    }
+
     @Override
     public String toString(T object) {
         return object.getName();

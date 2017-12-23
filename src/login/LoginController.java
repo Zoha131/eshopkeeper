@@ -1,6 +1,7 @@
 package login;
 
 
+import action.sell.SellView;
 import home.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -55,12 +56,15 @@ public class LoginController implements Initializable {
 
     void loadMain() {
         try {
-            Parent parent = FXMLLoader.load(getClass().getResource("/action/sell/sellView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/action/sell/sellView.fxml"));
+            Parent parent = loader.load();
             ScrollPane scrollPane = new ScrollPane();
-            scrollPane.setId("scroll");
+            scrollPane.setId("scrollSell");
             scrollPane.setContent(parent);
             Main.getRoot().setCenter(scrollPane);
             Main.getRoot().setTop(Main.getMainMenu());
+            SellView sellView = loader.getController();
+            sellView.setScrollPane(scrollPane);
 
         } catch (IOException ex) {
 

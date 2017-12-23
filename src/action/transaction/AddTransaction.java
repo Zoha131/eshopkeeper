@@ -63,11 +63,11 @@ public class AddTransaction {
         saveBtn.setOnAction(event -> {
             transaction.setTakenBy(takenbyTxt.getText());
             transaction.setDate(datePick.getEditor().getText());
-            transaction.setAmount(Double.parseDouble(amntTxt.getText()));
+            transaction.setPaid(Double.parseDouble(amntTxt.getText()));
             //todo-me to add validation rule
 
             Double due = customer.getDue();
-            due = due-transaction.getAmount();
+            due = due-transaction.getPaid();
             customer.setDue(due);
 
             boolean isSaved = DataHelper.insertSellTransaction(transaction);

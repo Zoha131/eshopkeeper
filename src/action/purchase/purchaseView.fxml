@@ -43,9 +43,9 @@
         <Label text="Supplier Name: " GridPane.rowIndex="2" />
         <TextField fx:id="supNameTxt" GridPane.columnIndex="1" GridPane.rowIndex="2" />
         <Label text="Address" GridPane.rowIndex="4" />
-        <TextField fx:id="adrsTxt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        <TextField fx:id="adrsTxt" GridPane.columnIndex="1" GridPane.rowIndex="4" />
         <Label text="Phone" GridPane.rowIndex="5" />
-        <TextField fx:id="phnTxt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+        <TextField fx:id="phnTxt" GridPane.columnIndex="1" GridPane.rowIndex="5" />
         <Label text="Purchase ID" GridPane.columnIndex="3" GridPane.rowIndex="2" />
         <TextField fx:id="idTxt" editable="false" GridPane.columnIndex="4" GridPane.rowIndex="2" />
         <Label text="Date" GridPane.columnIndex="3" GridPane.rowIndex="3" />
@@ -56,9 +56,9 @@
         <Label text="Total: " GridPane.columnIndex="3" GridPane.rowIndex="8" />
         <Label text="Paid: " GridPane.columnIndex="3" GridPane.rowIndex="9" />
         <Label text="Due: " GridPane.columnIndex="3" GridPane.rowIndex="10" />
-        <TextField fx:id="totalTxt" editable="false" text="0.00" GridPane.columnIndex="4" GridPane.rowIndex="8" />
-        <TextField fx:id="paidTxt" promptText="paidTxt" text="0.00" GridPane.columnIndex="4" GridPane.rowIndex="9" />
-        <TextField fx:id="dueTxt" editable="false" promptText="dueTxt" text="0.00" GridPane.columnIndex="4" GridPane.rowIndex="10" />
+        <TextField fx:id="totalTxt" editable="false" promptText="0.00" GridPane.columnIndex="4" GridPane.rowIndex="8" />
+        <TextField fx:id="paidTxt" promptText="0.00" GridPane.columnIndex="4" GridPane.rowIndex="9" />
+        <TextField fx:id="dueTxt" editable="false" promptText="0.00" GridPane.columnIndex="4" GridPane.rowIndex="10" />
         <TableView fx:id="itemTable" editable="true" prefHeight="50.0" prefWidth="500.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="7" GridPane.vgrow="ALWAYS">
 
         </TableView>
@@ -67,6 +67,7 @@
       <Button fx:id="saveBtn" mnemonicParsing="false" text="Save" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="11" />
       <Label text="Store Name" GridPane.rowIndex="3" />
       <TextField fx:id="strNameTxt" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <Button fx:id="clrBtn" mnemonicParsing="false" text="Clear" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="11" />
 
     </children>
     <padding>

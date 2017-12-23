@@ -290,7 +290,9 @@ public class DataHelper {
         query.append(" TEXT NOT NULL UNIQUE, ");
         query.append(sellTransaction.customerId);
         query.append(" INTEGER NOT NULL, ");
-        query.append(sellTransaction.amount);
+        query.append(sellTransaction.total);
+        query.append(" DOUBLE DEFAULT 0.0, ");
+        query.append(sellTransaction.paid);
         query.append(" DOUBLE NOT NULL, ");
         query.append(sellTransaction.takenBy);
         query.append(" TEXT NOT NULL, ");
@@ -301,23 +303,23 @@ public class DataHelper {
 
     }
     public static boolean insertSellTransaction(Transaction transaction){
-        String query = String.format("INSERT INTO sellTransaction ( %s, %s, %s, %s, %s) VALUES (?,?,?,?,?)",
-                sellTransaction.transactionId, sellTransaction.customerId,
-                sellTransaction.amount, sellTransaction.date, sellTransaction.takenBy);
+        String query = String.format("INSERT INTO sellTransaction ( %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?)",
+                sellTransaction.transactionId, sellTransaction.customerId, sellTransaction.total,
+                sellTransaction.paid, sellTransaction.date, sellTransaction.takenBy);
 
         try {
             Connection conn = getConnection();
             PreparedStatement prep = conn.prepareStatement(query);
             prep.setString(1, transaction.getTransactionId());
             prep.setInt(2, transaction.getCustomerId());
-            prep.setDouble(3, transaction.getAmount());
-            prep.setString(4, transaction.getDate());
-            prep.setString(5, transaction.getTakenBy());
+            prep.setDouble(3, transaction.getTotal());
+            prep.setDouble(4, transaction.getPaid());
+            prep.setString(5, transaction.getDate());
+            prep.setString(6, transaction.getTakenBy());
             prep.execute();
 
             conn.close();
             return true;
-            //todo-me to update customer's due data
         }catch (Exception e){
             System.out.println(e.getMessage());
             return false;
@@ -403,6 +405,102 @@ public class DataHelper {
         }
     }
 
+    public static boolean createPurchaseTransactionTable(){
+        StringBuilder query = new StringBuilder();
+        query.append("CREATE TABLE IF NOT EXISTS purchaseTransaction ( ");
+        query.append(purchaseTransaction.id);
+        query.append(" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ");
+        query.append(purchaseTransaction.transactionId);
+        query.append(" TEXT NOT NULL UNIQUE, ");
+        query.append(purchaseTransaction.supplierId);
+        query.append(" INTEGER NOT NULL, ");
+        query.append(purchaseTransaction.total);
+        query.append(" DOUBLE DEFAULT 0.0, ");
+        query.append(purchaseTransaction.paid);
+        query.append(" DOUBLE NOT NULL, ");
+        query.append(purchaseTransaction.takenBy);
+        query.append(" TEXT NOT NULL, ");
+        query.append(purchaseTransaction.date);
+        query.append(" TEXT NOT NULL ) ");
+
+        return execute(query.toString());
+
+    }
+    public static boolean insertPurchaseTransaction(Transaction transaction){
+        String query = String.format("INSERT INTO purchaseTransaction ( %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?)",
+                purchaseTransaction.transactionId, purchaseTransaction.supplierId,
+                purchaseTransaction.total,purchaseTransaction.paid, purchaseTransaction.date, purchaseTransaction.takenBy);
+
+        try {
+            Connection conn = getConnection();
+            PreparedStatement prep = conn.prepareStatement(query);
+            prep.setString(1, transaction.getTransactionId());
+            prep.setInt(2, transaction.getCustomerId());
+            prep.setDouble(3, transaction.getTotal());
+            prep.setDouble(4, transaction.getPaid());
+            prep.setString(5, transaction.getDate());
+            prep.setString(6, transaction.getTakenBy());
+            prep.execute();
+
+            conn.close();
+            return true;
+        }catch (Exception e){
+            System.out.println("PurchaseTransaction Insert "+e);
+            return false;
+        }
+
+    }
+
+    public static boolean createPurchaseTable(){
+        StringBuilder query = new StringBuilder();
+        query.append("CREATE TABLE IF NOT EXISTS purchase ( ");
+        query.append(purchase.id);
+        query.append(" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ");
+        query.append(purchase.supplierId);
+        query.append(" INTEGER NOT NULL, ");
+        query.append(purchase.productId);
+        query.append(" INTEGER NOT NULL, ");
+        query.append(purchase.rate);
+        query.append(" DOUBLE NOT NULL, ");
+        query.append(purchase.quantity);
+        query.append(" INTEGER NOT NULL, ");
+        query.append(purchase.date);
+        query.append(" TEXT NOT NULL, ");
+        query.append(purchase.transactionId);
+        query.append(" TEXT NOT NULL, ");
+        query.append(purchase.purchasedBy);
+        query.append(" TEXT NOT NULL ) ");
+
+        return execute(query.toString());
+    }
+    public static boolean insertPurchase(Invoice<Supplier> invoice) {
+        try {
+            String query = String.format("INSERT INTO purchase ( %s, %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?,?)",
+                    purchase.supplierId, purchase.productId, purchase.rate, purchase.quantity,
+                    purchase.date, purchase.transactionId, purchase.purchasedBy);
+
+            Connection conn = getConnection();
+
+            for (Item item : invoice.getData()) {
+                PreparedStatement prep = conn.prepareStatement(query);
+                prep.setInt(1, invoice.getTrader().getId());
+                prep.setInt(2, item.getProduct().getId());
+                prep.setDouble(3, item.getRate());
+                prep.setInt(4, item.getQuantity());
+                prep.setString(5, invoice.getDate());
+                prep.setString(6, invoice.getTransactionID());
+                prep.setString(7, invoice.getAuthorityName());
+                prep.execute();
+            }
+
+            conn.close();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Purchase Insert "+e);
+            return false;
+        }
+    }
+
     public static boolean updateData(String table, String column, String value, int id){
         String query = String.format("UPDATE %s SET %s='%s' WHERE id=%d",table,column,value,id);
         return execute(query);
@@ -442,7 +540,9 @@ public class DataHelper {
                 createProductTable() &&
                 creatSupplierTable() &&
                 createSellTransactionTable() &&
-                createSellTable();
+                createSellTable() &&
+                createPurchaseTransactionTable() &&
+                createPurchaseTable();
     }
 
     public static enum customer {
@@ -478,7 +578,8 @@ public class DataHelper {
     public static enum sellTransaction {
         id,
         customerId,
-        amount,
+        total,
+        paid,
         date,
         transactionId,
         takenBy
@@ -492,6 +593,25 @@ public class DataHelper {
         date,
         soldby,
         transactionID
+    }
+    public static enum purchaseTransaction {
+        id,
+        supplierId,
+        total,
+        paid,
+        date,
+        transactionId,
+        takenBy
+    }
+    public static enum purchase {
+        id,
+        supplierId,
+        productId,
+        rate,
+        quantity,
+        date,
+        purchasedBy,
+        transactionId
     }
 }
 

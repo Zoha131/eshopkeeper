@@ -1,5 +1,7 @@
 package home;
 
+import action.purchase.PurchaseView;
+import action.sell.SellView;
 import data_helper.DataHelper;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -98,14 +100,19 @@ public class Main extends Application {
         MenuItem sell = new MenuItem("SellView");
         sell.setOnAction(event -> {
             try{
-                Parent parent = FXMLLoader.load(getClass().getResource("/action/sell/sellView.fxml"));
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/action/sell/sellView.fxml"));
+                Parent parent = loader.load();
+
                 ScrollPane scrollPane = new ScrollPane();
-                scrollPane.setId("scroll");
+                scrollPane.setId("scrollSell");
                 scrollPane.setContent(parent);
 
                 boolean sameView = Main.getRoot().getCenter().getId().equals(scrollPane.getId());
                 if(!sameView){
                     Main.getRoot().setCenter(scrollPane);
+                    SellView sellView = loader.getController();
+                    sellView.setScrollPane(scrollPane);
                 }
 
             }catch (Exception e){
@@ -162,7 +169,9 @@ public class Main extends Application {
         MenuItem purchase = new MenuItem("Purchase");
         purchase.setOnAction(event -> {
             try{
-                Parent parent = FXMLLoader.load(getClass().getResource("/action/purchase/purchaseView.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/action/purchase/purchaseView.fxml"));
+                Parent parent = loader.load();
+
                 ScrollPane scrollPane = new ScrollPane();
                 scrollPane.setId("scrollPurchase");
                 scrollPane.setContent(parent);
@@ -170,6 +179,8 @@ public class Main extends Application {
                 boolean sameView = Main.getRoot().getCenter().getId().equals(scrollPane.getId());
                 if(!sameView){
                     Main.getRoot().setCenter(scrollPane);
+                    PurchaseView purchaseView = loader.getController();
+                    purchaseView.setScrollPane(scrollPane);
                 }
 
             }catch (Exception e){
