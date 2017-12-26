@@ -13,11 +13,11 @@
 
 <GridPane fx:id="transactionView" alignment="CENTER_RIGHT" maxHeight="Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="action.transaction.AddTransaction">
     <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="139.0" minWidth="10.0" prefWidth="139.0" />
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="220.0" minWidth="10.0" prefWidth="220.0" />
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="214.0" minWidth="10.0" prefWidth="178.0" />
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="191.0" minWidth="10.0" prefWidth="146.0" />
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="220.0" minWidth="10.0" prefWidth="216.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="999.0" minWidth="10.0" prefWidth="139.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="999.0" minWidth="10.0" prefWidth="220.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="999.0" minWidth="10.0" prefWidth="178.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="999.0" minWidth="10.0" prefWidth="146.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="999.0" minWidth="10.0" prefWidth="216.0" />
     </columnConstraints>
     <rowConstraints>
         <RowConstraints maxHeight="179.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />

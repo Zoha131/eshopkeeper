@@ -40,7 +40,7 @@ public class DataHelper {
         query.append(customer.type);
         query.append(" TEXT NOT NULL, ");
         query.append(customer.due);
-        query.append(" REAL NOT NULL DEFAULT 0.00 ) ");
+        query.append(" REAL DEFAULT 0.00 ) ");
 
         /*try{
             Connection conn = getConnection();
@@ -491,6 +491,10 @@ public class DataHelper {
                 prep.setString(6, invoice.getTransactionID());
                 prep.setString(7, invoice.getAuthorityName());
                 prep.execute();
+                updateData("product", "stock", item.getQuantity()+item.getProduct().getStock(), item.getProduct().getId());
+                updateData("product", "prate", item.getRate(), item.getProduct().getId());
+                updateData("product", "rrate", item.getProduct().getRrate(), item.getProduct().getId());
+                updateData("product", "wrate", item.getProduct().getWrate(), item.getProduct().getId());
             }
 
             conn.close();

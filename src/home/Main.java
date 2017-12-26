@@ -35,15 +35,13 @@ public class Main extends Application {
 
         boolean data = DataHelper.createAllTables();
 
-        TabPane addCustomerView = FXMLLoader.load(getClass().getResource("/edit/edit.fxml"));
+
         Parent parent = FXMLLoader.load(getClass().getResource("/login/login.fxml"));
 
 
         mainMenu = this.getMenubar();
         root.setCenter(parent);
 
-        addCustomerView.prefWidthProperty().bind(root.widthProperty());
-        addCustomerView.prefHeightProperty().bind(root.heightProperty().subtract(30));
 
 
         root.setMinWidth(1000);
@@ -51,7 +49,7 @@ public class Main extends Application {
         primaryStage.setMinWidth(1030);
         primaryStage.setMinHeight(640);
 
-        System.out.println("Main:: all table created: "+DataHelper.creatCustomerTable());
+        System.out.println("Main:: all table created: "+ data);
 
         primaryStage.setTitle("eShopkeeper");
         primaryStage.setScene(new Scene(root, 1000, 600));

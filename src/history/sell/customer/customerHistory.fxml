@@ -24,12 +24,12 @@
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints maxHeight="108.0" minHeight="10.0" prefHeight="76.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="194.0" minHeight="10.0" prefHeight="106.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="234.0" minHeight="10.0" prefHeight="227.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="234.0" minHeight="10.0" prefHeight="47.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="177.0" minHeight="10.0" prefHeight="110.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="28.0" minHeight="10.0" prefHeight="22.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="108.0" minHeight="10.0" prefHeight="57.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="194.0" minHeight="10.0" prefHeight="52.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="999999.0" minHeight="10.0" prefHeight="328.0" vgrow="ALWAYS" />
+        <RowConstraints maxHeight="234.0" minHeight="10.0" prefHeight="21.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="177.0" minHeight="10.0" prefHeight="78.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="28.0" minHeight="10.0" prefHeight="16.0" vgrow="SOMETIMES" />
     </rowConstraints>
     <padding>
         <Insets left="20.0" right="20.0" />

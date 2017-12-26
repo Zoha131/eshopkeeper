@@ -66,18 +66,8 @@ public class PurchaseView {
         datePick.setValue(LocalDate.now());
 
         // to update the dueTxt with total and paid text
-        paidTxt.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue)-> {
-            double paid = 0;
-            double total = 0;
-            try{
-                total = Double.parseDouble(totalTxt.getText());
-                paid = Double.parseDouble(newValue);
-            }catch (NumberFormatException e){
-                System.out.println("PuchaseView: paidTxt Property Exception");
-            }finally {
-                dueTxt.setText(String.valueOf((total-paid)));
-            }
-        });
+        paidTxt.textProperty().addListener(this::updateDueTxt);
+        totalTxt.textProperty().addListener(this::updateDueTxt);
 
         dataSupplier = DataHelper.getSupplier();
         dataSupplierName = FXCollections.observableArrayList();
@@ -114,6 +104,8 @@ public class PurchaseView {
     //this function will be called from the loader
     public void setScrollPane(ScrollPane scrollPane) {
         this.scrollPane = scrollPane;
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        purInvoiceGrid.minWidthProperty().bind(scrollPane.widthProperty().subtract(15));
     }
 
     private void addOnAction() {
@@ -236,6 +228,7 @@ public class PurchaseView {
             totalTxt.setText(String.valueOf(invoice.getPrice()));
 
             itemTable.setItems(invoice.getData());
+            itemTable.requestFocus();
         });
 
         DoubleStringConverter doubleStringConverter = new DoubleStringConverter();
@@ -255,6 +248,7 @@ public class PurchaseView {
             totalTxt.setText(String.valueOf(invoice.getPrice()));
 
             itemTable.setItems(invoice.getData());
+            itemTable.requestFocus();
             //todo-me Tab->next edit cell Enter->commit edit
         });
 
@@ -273,6 +267,7 @@ public class PurchaseView {
             totalTxt.setText(String.valueOf(invoice.getPrice()));
 
             itemTable.setItems(invoice.getData());
+            itemTable.requestFocus();
         });
 
         TableColumn<Item, Double> rrateColumn = new TableColumn<>("Ret. Rate");
@@ -290,6 +285,7 @@ public class PurchaseView {
             totalTxt.setText(String.valueOf(invoice.getPrice()));
 
             itemTable.setItems(invoice.getData());
+            itemTable.requestFocus();
         });
 
         TableColumn<Item, Double> totalColumn = new TableColumn<>("Total");
@@ -335,6 +331,20 @@ public class PurchaseView {
         setTextEditable(true);
         idTxt.setText(UUID.randomUUID().toString());
         supNameTxt.requestFocus();
+    }
+
+    private void updateDueTxt(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+        double paid = 0;
+        double total = 0;
+        try{
+            total = Double.parseDouble(totalTxt.getText());
+            paid = Double.parseDouble(paidTxt.getText());
+        }catch (NumberFormatException e){
+            System.out.println("PuchaseView: paidTxt Property Exception");
+        }finally {
+            double due = total-paid;
+            dueTxt.setText(String.format("%.2f", due));
+        }
     }
 
 }

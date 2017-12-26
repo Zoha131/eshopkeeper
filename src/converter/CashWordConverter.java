@@ -5,22 +5,22 @@ import java.util.StringTokenizer;
 public class CashWordConverter {
 
     public static final String[] units = {
-            "", " one", "two", "three", "four", "five", "six", "seven",
-            "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen",
-            "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"
+            "", " One", "Two", "Three", "Four", "Five", "Six", "Seven",
+            "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen",
+            "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
     };
 
     public static final String[] tens = {
             "", // 0
             "", // 1
-            "twenty", // 2
-            "thirty", // 3
-            "forty", // 4
-            "fifty", // 5
-            "sixty", // 6
-            "seventy", // 7
-            "eighty", // 8
-            "ninety" // 9
+            "Twenty", // 2
+            "Thirty", // 3
+            "Forty", // 4
+            "Fifty", // 5
+            "Sixty", // 6
+            "Seventy", // 7
+            "Eighty", // 8
+            "Ninety" // 9
     };
 
     public static String doubleConvert(final double n) {
@@ -30,11 +30,11 @@ public class CashWordConverter {
         String last = token.nextToken();
         try {
             pass = convert(Integer.parseInt(first))+" ";
-            pass=pass+"POINT";
+            pass=pass+"Point";
             for (int i = 0; i < last.length(); i++) {
                 String get=convert(Integer.parseInt(last.charAt(i)+""));
                 if(get.isEmpty()){
-                    pass=pass+" "+"ZERO";
+                    pass=pass+" "+"Zero";
                 }else{
                     pass=pass+" "+get;
                 }
@@ -60,17 +60,17 @@ public class CashWordConverter {
         }
 
         if (n < 1000) {
-            return units[n / 100] + " hundred " + ((n % 100 != 0) ? " " : "") + convert(n % 100);
+            return units[n / 100] + " Hundred " + ((n % 100 != 0) ? " " : "") + convert(n % 100);
         }
 
         if (n < 1000000) {
-            return convert(n / 1000) + " thousand " + ((n % 1000 != 0) ? " " : "") + convert(n % 1000);
+            return convert(n / 1000) + " Thousand " + ((n % 1000 != 0) ? " " : "") + convert(n % 1000);
         }
 
         if (n < 1000000000) {
-            return convert(n / 1000000) + " million " + ((n % 1000000 != 0) ? " " : "") + convert(n % 1000000);
+            return convert(n / 1000000) + " Million " + ((n % 1000000 != 0) ? " " : "") + convert(n % 1000000);
         }
 
-        return convert(n / 1000000000) + " billion " + ((n % 1000000000 != 0) ? " " : "") + convert(n % 1000000000);
+        return convert(n / 1000000000) + " Billion " + ((n % 1000000000 != 0) ? " " : "") + convert(n % 1000000000);
     }
 }

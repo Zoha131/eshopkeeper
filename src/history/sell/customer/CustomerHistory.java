@@ -3,6 +3,7 @@ package history.sell.customer;
 import converter.DateStringConverter;
 import converter.ModelStringConverter;
 import data_helper.DataHelper;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -12,6 +13,7 @@ import model.*;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,9 +32,7 @@ public class CustomerHistory {
     private Customer customer;
     private DateStringConverter dateConverter;
 
-    private List<Integer> products;
-    private int tQuantity;
-    private double tAmount;
+
 
     public void initialize(){
         dataCustomer = DataHelper.getCustomer();
@@ -43,9 +43,19 @@ public class CustomerHistory {
         customerStringConverter = new ModelStringConverter(dataCustomer);
 
         //setting go btn binding
-        //goBtn.disableProperty().bind(Bindings.isEmpty(nameTxt.textProperty()).or(Bindings.isEmpty(fromDatePic.getEditor().textProperty())).or(Bindings.isEmpty(toDatePic.getEditor().textProperty())));
-        goBtn.setDisable(true);
-        //todo-me to add logic to filter result table
+        goBtn.disableProperty().bind(Bindings.isEmpty(nameTxt.textProperty()).or(Bindings.isEmpty(fromDatePic.getEditor().textProperty())).or(Bindings.isEmpty(toDatePic.getEditor().textProperty())));
+        goBtn.setOnAction(event -> {
+            LocalDate from = fromDatePic.getValue();
+            LocalDate to = toDatePic.getValue();
+            ObservableList<SellHistory> filteredData = FXCollections.observableArrayList();
+            for(SellHistory history: dataSellHistory){
+                if(history.getDate().compareTo(from)>=0 && history.getDate().compareTo(to)<=0){
+                    filteredData.add(history);
+                }
+            }
+            mainTbl.setItems(filteredData);
+            updateSummery(filteredData);
+        });
 
         //setting converter to the Datepicker
         dateConverter = new DateStringConverter();
@@ -63,22 +73,29 @@ public class CustomerHistory {
             dataSellHistory = DataHelper.getSellHistory(customer.getId());
             mainTbl.getItems().setAll(dataSellHistory);
 
-            //
-            products = new ArrayList<>();
-            for(SellHistory sel: dataSellHistory){
-                if(!products.contains(sel.getPrductId())){
-                    products.add(sel.getPrductId());
-                }
-                tAmount += sel.getAmount();
-                tQuantity += sel.getQuantity();
-            }
-            System.out.println(products.size());
+            updateSummery(dataSellHistory);
 
-            tProdLbl.setText("Total Product Types: "+products.size());
-            tQuanLbl.setText("Total Quantity:      "+tQuantity);
-            tAmnLbl.setText ("Total Amount:        "+tAmount);
 
         });
+    }
+
+    private void updateSummery(ObservableList<SellHistory> sellHistories){
+        List<Integer> products= new ArrayList<>();
+        int tQuantity=0;
+        double tAmount=0;
+
+        for(SellHistory sel: sellHistories){
+            if(!products.contains(sel.getPrductId())){
+                products.add(sel.getPrductId());
+            }
+            tAmount += sel.getAmount();
+            tQuantity += sel.getQuantity();
+        }
+        System.out.println(products.size());
+
+        tProdLbl.setText("Total Product Types: "+products.size());
+        tQuanLbl.setText("Total Quantity:      "+tQuantity);
+        tAmnLbl.setText ("Total Amount:        "+tAmount);
     }
 
     private void addColumn(){
@@ -107,3 +124,7 @@ public class CustomerHistory {
         mainTbl.getColumns().addAll(date,name,company,rate,quantity,amount,soldBy);
     }
 }
+/*
+**todo-me If the name of two or more customer is same then always the firs customer is selected.
+**todo-me This is a bug. need to be fixed. SellView nad PurchaseView have also this but
+*/

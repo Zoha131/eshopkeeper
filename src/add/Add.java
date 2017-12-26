@@ -19,5 +19,3 @@ public class Add {
     }
 }
 
-//todo-me to re order the text field of every view tosyncronised with tab command
-

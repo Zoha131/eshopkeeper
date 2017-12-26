@@ -66,7 +66,7 @@
             <Label text="Paid: " GridPane.columnIndex="3" GridPane.rowIndex="12" />
             <Label text="Due: " GridPane.columnIndex="3" GridPane.rowIndex="13" />
             <TextField fx:id="priceTxt" editable="false" promptText="0.00" GridPane.columnIndex="4" GridPane.rowIndex="9" />
-            <TextField fx:id="vatTxt" editable="false" promptText="0.00" GridPane.columnIndex="4" GridPane.rowIndex="10" />
+            <TextField fx:id="vatTxt" promptText="0.00" GridPane.columnIndex="4" GridPane.rowIndex="10" />
             <TextField fx:id="totalTxt" editable="false" promptText="0.00" GridPane.columnIndex="4" GridPane.rowIndex="11" />
             <TextField fx:id="paidTxt" promptText="0.00" GridPane.columnIndex="4" GridPane.rowIndex="12" />
             <TextField fx:id="dueTxt" editable="false" promptText="0.00" GridPane.columnIndex="4" GridPane.rowIndex="13" />

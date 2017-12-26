@@ -6,8 +6,8 @@ import java.util.List;
 
 public class Invoice<T> {
     private ObservableList<Item> data;
-    private double price, vat;
-    private String amountInStr, date, transactionID, authorityName;
+    private double price, vat, paid;
+    private String date, transactionID, authorityName;
     private T trader;
 
     public Invoice() {
@@ -81,11 +81,11 @@ public class Invoice<T> {
         this.vat = vat;
     }
 
-    public String getAmountInStr() {
-        return amountInStr;
+    public double getPaid() {
+        return paid;
     }
 
-    public void setAmountInStr(String amountInStr) {
-        this.amountInStr = amountInStr;
+    public void setPaid(double paid) {
+        this.paid = paid;
     }
 }
