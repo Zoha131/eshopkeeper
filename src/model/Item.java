@@ -33,6 +33,19 @@ public class Item{
     public Item() {
     }
 
+    public void constuctItem(int serial, boolean isRetailer, int quantity) {
+        this.serial = serial;
+        this.quantity = quantity;
+        if(isRetailer){
+            this.rate = product.getRrate();
+        }
+        else {
+            this.rate = product.getWrate();
+        }
+        this.total = quantity* rate;
+        this.description = product.getName()+" ("+product.getCode()+")";
+    }
+
     public double getRrate(){
         return product.getRrate();
     }

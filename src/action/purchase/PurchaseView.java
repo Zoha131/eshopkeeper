@@ -5,14 +5,12 @@ import converter.DateStringConverter;
 import converter.ModelStringConverter;
 import data_helper.DataHelper;
 import home.Main;
-import home.Toast;
+import dialog.Toast;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -27,11 +25,9 @@ import org.controlsfx.validation.Severity;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 public class PurchaseView {
     @FXML TextField supNameTxt, strNameTxt, adrsTxt, phnTxt, idTxt, purchasedByTxt, totalTxt, paidTxt, dueTxt;

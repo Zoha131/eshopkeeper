@@ -6,9 +6,8 @@ import converter.ModelStringConverter;
 import data_helper.DataHelper;
 import dialog.AddProductDialog;
 import home.Main;
-import home.Toast;
+import dialog.Toast;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -50,16 +49,13 @@ public class SellView {
     private final double GRID_HEIGHT=750;
     private double tableHeight = 50;
 
-    ObservableList<String> dataCustomerName, dataProductName;
+    ObservableList<String> dataCustomerName;
     ModelStringConverter<Customer> converterCustomer;
     ObservableList<Customer> dataCustomer;
-    ObservableList<Product> dataProduct;
-    ModelStringConverter<Product> converterProduct;
 
 
     private static Invoice<Customer> invoice;
-    private int serial=0;
-    private Product addProduct;
+    private int serial=1;
     private DateStringConverter dateStringConverter;
     private boolean isRetailer=true;
     private ValidationSupport priceValidation, customerValidation;
@@ -87,13 +83,8 @@ public class SellView {
             dataCustomerName.add(cus.getName());
         }
 
-
-        dataProduct = DataHelper.getProduct();
-        dataProductName = FXCollections.observableArrayList();
-        converterProduct = new ModelStringConverter<>(dataProduct);
-        for(Product prod: dataProduct){
-            dataProductName.add(converterProduct.toString(prod));
-        }
+        //setting the AddProductDialoge class
+        AddProductDialog.setDataProduct(DataHelper.getProduct());
 
 
         invoice = new Invoice<>();
@@ -168,16 +159,16 @@ public class SellView {
         saveBtn.disableProperty().bind(priceValidation.invalidProperty());
         printBtn.disableProperty().bind(priceValidation.invalidProperty());
         addBtn.setOnAction((ActionEvent event) -> {
+            //after adding an item the customer type will be locked
+            invoiceType.setDisable(true);
 
-            Dialog<AddProductDialog.DialogModel> dialog = AddProductDialog.getSellDialogue(dataProductName);
+            Dialog<Item> itemDialog = AddProductDialog.getSellDialogue(serial, isRetailer);
 
-            Optional<AddProductDialog.DialogModel> result = dialog.showAndWait();
+            Optional<Item> result = itemDialog.showAndWait();
 
-            result.ifPresent(dialogModel -> {
-                //get product by name and add to the invoice data
-                addProduct = converterProduct.fromString(dialogModel.getName());
-                invoice.addData(new Item(++serial, addProduct, isRetailer, dialogModel.getQuantity()));
-                addProduct = null;
+            result.ifPresent(item -> {
+                invoice.addData(item);
+                serial++;
 
                 //calculate the invoice price and update the price in textField
                 invoice.calPrice();
@@ -217,6 +208,11 @@ public class SellView {
                     Platform.runLater(()->{
                         grdPan.setOpacity(1);
                         scrollPane.setVvalue(0);
+
+                        //updating the data so that the stock in the ui would be updated.
+                        //if I don't do this, then when the seller try to sell to multiple
+                        // customer the stock in the ui don't tell the current stock
+                        AddProductDialog.setDataProduct(DataHelper.getProduct());
                     });
                 }
             });
@@ -301,12 +297,19 @@ public class SellView {
         quantityColumn.setCellFactory(TextFieldTableCell.forTableColumn(integerStringConverter));
         quantityColumn.setOnEditCommit(event -> {
             Item data = event.getRowValue();
+            int stock = data.getProduct().getStock();
+            if(event.getNewValue()>stock){
+                Toast.makeText(Main.getMainStage(), String.format("Quantity must be less than or equalt to %d", stock), 1500, 500,500);
+                itemTable.getItems().setAll(invoice.getData());
+            }
+            else {
 
-            invoice.getData().get(data.getSerial()-1).setQuantity(event.getNewValue());
-            invoice.getData().get(data.getSerial()-1).calTotal();
-            invoice.calPrice();
-            priceTxt.setText(String.valueOf(invoice.getPrice()));
-            itemTable.getItems().setAll(invoice.getData());
+                invoice.getData().get(data.getSerial() - 1).setQuantity(event.getNewValue());
+                invoice.getData().get(data.getSerial() - 1).calTotal();
+                invoice.calPrice();
+                priceTxt.setText(String.valueOf(invoice.getPrice()));
+
+            }
         });
 
         TableColumn<Item, Double> rateColumn = new TableColumn<>("Rate");
@@ -369,7 +372,7 @@ public class SellView {
         invoiceType.setDisable(!editable);
     }
 
-    void setBtnVisible(boolean p){
+    private void setBtnVisible(boolean p){
         saveBtn.setVisible(p);
         addBtn.setVisible(p);
         printBtn.setVisible(p);

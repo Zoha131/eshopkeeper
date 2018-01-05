@@ -10,12 +10,14 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import model.Customer;
 import model.Item;
 import model.Product;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
@@ -25,9 +27,14 @@ import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 public class AddProductDialog {
+
+    private static ObservableList<String>  dataProductName;
+    private static ObservableList<Product> dataProduct;
+    private static ModelStringConverter<Product> converterProduct;
 
     public static Dialog<DialogModel> getSellDialogue(ObservableList<String> dataProductName){
         Dialog<DialogModel> sellDialogue = new Dialog<>();
@@ -77,6 +84,92 @@ public class AddProductDialog {
         sellDialogue.setResultConverter(dialogButton -> {
             if (dialogButton == loginButtonType) {
                 return new DialogModel(productName.getText(), Integer.parseInt(quantity.getText()));
+            }
+            return null;
+        });
+
+        return sellDialogue;
+    }
+
+    public static Dialog<Item> getSellDialogue(int serial, boolean isRetailer){
+        Dialog<Item> sellDialogue = new Dialog<>();
+        Item item = new Item();
+
+        sellDialogue.setTitle("eShopkeeper");
+        sellDialogue.setHeaderText("Insert Product Name and Quantity");
+
+        // Set the button types.
+        ButtonType loginButtonType = new ButtonType("Add Item", ButtonBar.ButtonData.OK_DONE);
+        sellDialogue.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+
+        // Create the productName and quantity labels and fields.
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(30, 90, 20, 80));
+
+        TextField productName = new TextField();
+        productName.setPromptText("Product Name");
+        AutoCompletionBinding<String> binding = TextFields.bindAutoCompletion(productName, dataProductName);
+        TextField quantity = new TextField();
+        quantity.setPromptText("Quantity");
+        Label stockLbl = new Label();
+        stockLbl.setMinWidth(40);
+        Label errMsg = new Label();
+        errMsg.setTextFill(Color.RED);
+
+        grid.add(new Label("Product:"), 0, 0);
+        grid.add(productName, 1, 0);
+        grid.add(new Label("Quantity:"), 0, 1);
+        grid.add(quantity, 1, 1);
+        grid.add(stockLbl, 2,1);
+        grid.add(errMsg, 0,2);
+        GridPane.setColumnSpan(errMsg, 3);
+
+        //adding validation
+        ValidationSupport validationSupport = new ValidationSupport();
+        validationSupport.registerValidator(quantity, Validator.createRegexValidator("Must be a number", "[0-9]+", Severity.ERROR));
+
+        // Enable/Disable login button depending on whether a productName was entered.
+        BooleanProperty autoComletedProperty = new SimpleBooleanProperty(false);
+        Node selectButton = sellDialogue.getDialogPane().lookupButton(loginButtonType);
+        selectButton.disableProperty().bind(autoComletedProperty.not().or(validationSupport.invalidProperty()));
+        binding.setOnAutoCompleted((AutoCompletionBinding.AutoCompletionEvent<String> eventAuto)-> {
+            autoComletedProperty.setValue(true);
+            Product product = converterProduct.fromString(eventAuto.getCompletion());
+            stockLbl.setText(String.format("{ %d }", product.getStock()));
+
+            item.setProduct(product);
+        });
+
+        quantity.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue)-> {
+                try {
+                    int count = Integer.parseInt(newValue);
+                    int stock = item.getProduct().getStock();
+                    if(count>stock){
+                        errMsg.setText(String.format("Quantity must be less than or equal to %d", item.getProduct().getStock()));
+                        autoComletedProperty.setValue(false);
+                    }
+                    else {
+                        errMsg.setText("");
+                        autoComletedProperty.setValue(true);
+                    }
+                }catch (Exception e){
+                    errMsg.setText("Quantity must be a number");
+                }
+
+        });
+
+        sellDialogue.getDialogPane().setContent(grid);
+
+        // Request focus on the username field by default.
+        Platform.runLater(() -> productName.requestFocus());
+
+        // Convert the result to a username-password-pair when the login button is clicked.
+        sellDialogue.setResultConverter(dialogButton -> {
+            if (dialogButton == loginButtonType) {
+                item.constuctItem(serial, isRetailer, Integer.parseInt(quantity.getText()));
+                return item;
             }
             return null;
         });
@@ -239,6 +332,15 @@ public class AddProductDialog {
         });
 
         return sellDialogue;
+    }
+
+    public static void setDataProduct(ObservableList<Product> dataProduct) {
+        AddProductDialog.dataProduct = dataProduct;
+        AddProductDialog.converterProduct = new ModelStringConverter<>(dataProduct);
+        AddProductDialog.dataProductName = FXCollections.observableArrayList();
+        for(Product product: dataProduct){
+            dataProductName.add(converterProduct.toString(product));
+        }
     }
 
     public static class DialogModel {

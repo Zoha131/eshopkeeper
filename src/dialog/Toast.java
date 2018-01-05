@@ -1,4 +1,4 @@
-package home;
+package dialog;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -12,10 +12,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-public final class Toast
-{
-    public static void makeText(Stage ownerStage, String toastMsg, int toastDelay, int fadeInDelay, int fadeOutDelay)
-    {
+public final class Toast {
+    public static void makeText(Stage ownerStage, String toastMsg, int toastDelay, int fadeInDelay, int fadeOutDelay) {
         Stage toastStage=new Stage();
         toastStage.initOwner(ownerStage);
         toastStage.setResizable(false);

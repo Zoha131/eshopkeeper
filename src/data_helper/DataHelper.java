@@ -367,6 +367,7 @@ public class DataHelper {
                 prep.setString(6, invoice.getTransactionID());
                 prep.setString(7, invoice.getAuthorityName());
                 prep.execute();
+                updateData("product", "stock", item.getProduct().getStock()-item.getQuantity(), item.getProduct().getId());
             }
 
             conn.close();

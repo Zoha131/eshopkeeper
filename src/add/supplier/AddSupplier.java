@@ -2,10 +2,8 @@ package add.supplier;
 
 import data_helper.DataHelper;
 import home.Main;
-import home.Toast;
+import dialog.Toast;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
