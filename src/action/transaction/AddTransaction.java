@@ -5,6 +5,8 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -27,7 +29,7 @@ public class AddTransaction {
     @FXML private ComboBox<String> trType;
     @FXML private TextField nameTxt,adrsTxt, trIdTxt, phnTxt, amntTxt,takenbyTxt;
     @FXML private DatePicker datePick;
-    @FXML private Button saveBtn;
+    @FXML private Button saveBtn, clrBtn;
 
     private ObservableList<Customer> dataCustomer;
     private ObservableList<String> dataCustomerName;
@@ -41,6 +43,10 @@ public class AddTransaction {
     private Customer customer;
     private Supplier supplier;
     private ValidationSupport validation;
+
+    private AutoCompletionBinding<String> supplierBinding, customerBinding;
+
+    private boolean isCustomer = true;
 
     public void initialize(){
         dataCustomer = DataHelper.getCustomer();
@@ -57,25 +63,55 @@ public class AddTransaction {
             dataSupplierName.add(supplierModelStringConverter.toString(sup));
         }
 
+        //user must have to select trader first
+        nameTxt.setDisable(true);
 
         trType.getItems().setAll("Customer", "Supplier");
-        trType.setValue("Customer");
+        trType.setOnAction(event -> {
+            nameTxt.setDisable(false);
+            clear(null);
 
-        AutoCompletionBinding<String> binding = TextFields.bindAutoCompletion(nameTxt, dataCustomerName);
-        binding.setOnAutoCompleted(event -> {
-            customer = customerStringConverter.fromString(event.getCompletion());
+            if(trType.getSelectionModel().getSelectedItem().equals("Customer")){
+                isCustomer = true;
+                if(supplierBinding != null) supplierBinding.dispose();
+                customerBinding = TextFields.bindAutoCompletion(nameTxt, dataCustomerName);
+                customerBinding.setOnAutoCompleted(event1 -> {
+                    customer = customerStringConverter.fromString(event1.getCompletion());
 
-            //building transaction object
-            transaction = new Transaction();
-            transaction.setCustomerId(customer.getId());
-            transaction.setTransactionId(UUID.randomUUID().toString());
+                    //building transaction object
+                    transaction = new Transaction();
+                    transaction.setCustomerId(customer.getId());
+                    transaction.setTransactionId(UUID.randomUUID().toString());
 
-            //update the view with the customer
-            adrsTxt.setText(customer.getAddress());
-            phnTxt.setText(customer.getPhone());
-            trIdTxt.setText(transaction.getTransactionId());
-            datePick.setValue(LocalDate.now());
+                    //update the view with the customer
+                    adrsTxt.setText(customer.getAddress());
+                    phnTxt.setText(customer.getPhone());
+                    trIdTxt.setText(transaction.getTransactionId());
+                    datePick.setValue(LocalDate.now());
+                });
+            }
+            else {
+                isCustomer = false;
+                if(customerBinding != null) customerBinding.dispose();
+                supplierBinding = TextFields.bindAutoCompletion(nameTxt, dataSupplierName);
+                supplierBinding.setOnAutoCompleted(event2 -> {
+                    supplier = supplierModelStringConverter.fromString(event2.getCompletion());
+
+                    //building transaction object
+                    transaction = new Transaction();
+                    transaction.setCustomerId(supplier.getId());
+                    transaction.setTransactionId(UUID.randomUUID().toString());
+
+                    //update the view with the customer
+                    adrsTxt.setText(supplier.getAddress());
+                    phnTxt.setText(supplier.getPhone());
+                    trIdTxt.setText(transaction.getTransactionId());
+                    datePick.setValue(LocalDate.now());
+                });
+            }
         });
+
+
 
         validation = new ValidationSupport();
         Platform.runLater(()->{
@@ -90,20 +126,37 @@ public class AddTransaction {
             transaction.setDate(datePick.getEditor().getText());
             transaction.setPaid(Double.parseDouble(amntTxt.getText()));
 
-            Double due = customer.getDue();
-            due = due-transaction.getPaid();
-            customer.setDue(due);
+            boolean isSaved=false, isUpdated=false;
 
-            boolean isSaved = DataHelper.insertSellTransaction(transaction);
-            boolean isUpdated = DataHelper.updateData("customer", "due", customer.getDue(), customer.getId());
+            if(isCustomer){
+                Double due = customer.getDue();
+                due = due-transaction.getPaid();
+                customer.setDue(due);
+
+                isSaved = DataHelper.insertSellTransaction(transaction);
+                isUpdated = DataHelper.updateData("customer", "due", customer.getDue(), customer.getId());
+
+            }
+            else {
+                Double due = supplier.getDue();
+                due = due-transaction.getPaid();
+                supplier.setDue(due);
+
+                isSaved = DataHelper.insertPurchaseTransaction(transaction);
+                isUpdated = DataHelper.updateData("supplier", "due", supplier.getDue(), supplier.getId());
+            }
+
+
             if(isSaved && isUpdated){
-                clear();
+                clear(null);
                 nameTxt.requestFocus();
             }
         });
+
+        clrBtn.setOnAction(this::clear);
     }
 
-    private void clear(){
+    private void clear(ActionEvent event){
         nameTxt.clear();
         adrsTxt.clear();
         phnTxt.clear();
