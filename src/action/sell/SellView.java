@@ -1,8 +1,6 @@
 package action.sell;
 
 import add.customer.AddCustomer;
-import add.product.AddProduct;
-import converter.CashWordConverter;
 import converter.DateStringConverter;
 import converter.ModelStringConverter;
 import data_helper.DataHelper;
@@ -11,34 +9,32 @@ import home.Main;
 import home.Toast;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.print.*;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.input.InputMethodEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.transform.Scale;
 import javafx.util.converter.IntegerStringConverter;
 import model.*;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
+import org.controlsfx.validation.Severity;
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.Validator;
 import print.InvoiceSell;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class SellView {
     @FXML    TextField cusTxt, adrsTxt, phnTxt, emailTxt, invoiceTxt, soldByTxt,priceTxt, vatTxt, totalTxt, paidTxt, dueTxt, strTxt;
@@ -66,6 +62,7 @@ public class SellView {
     private Product addProduct;
     private DateStringConverter dateStringConverter;
     private boolean isRetailer=true;
+    private ValidationSupport priceValidation, customerValidation;
 
 
     public void initialize() {
@@ -104,6 +101,7 @@ public class SellView {
 
         invoiceType.getItems().addAll(AddCustomer.CusType.WholeSale.toString(), AddCustomer.CusType.Retailer.toString());
         invoiceType.setValue(AddCustomer.CusType.Retailer.toString());
+        invoiceType.setStyle("-fx-opacity: 1;"); //opacity has been set explicitly with css so this would be readable even after disabling it
         invoiceType.setOnAction(event -> {
             if(invoiceType.getSelectionModel().getSelectedItem().equals(AddCustomer.CusType.WholeSale.toString())){
                 strLbl.setOpacity(1);
@@ -135,6 +133,25 @@ public class SellView {
                 strTxt.setText(curCustomer.getStore());
             }
         });
+
+        //adding validation
+        priceValidation = new ValidationSupport();
+        customerValidation = new ValidationSupport();
+        Platform.runLater(()->{
+            priceValidation.registerValidator(vatTxt, Validator.createRegexValidator("Must be a number", "[0-9]*\\.?[0-9]*", Severity.ERROR));
+            priceValidation.registerValidator(paidTxt, Validator.createRegexValidator("Must be a Decimal", "[0-9]+\\.?[0-9]*", Severity.ERROR));
+            priceValidation.registerValidator(totalTxt, Validator.createRegexValidator("Must be a Decimal", "[0-9]+\\.?[0-9]*", Severity.ERROR));
+            priceValidation.registerValidator(priceTxt, Validator.createRegexValidator("Must be a Decimal", "[0-9]+\\.?[0-9]*", Severity.ERROR));
+            priceValidation.registerValidator(dueTxt, Validator.createRegexValidator("Must be a Decimal", "[0-9]+\\.?[0-9]*", Severity.ERROR));
+        });
+        Platform.runLater(()->{
+            customerValidation.registerValidator(cusTxt, Validator.createEmptyValidator("These fields must not be empty"));
+            customerValidation.registerValidator(adrsTxt, Validator.createEmptyValidator("These fields must not be empty"));
+            customerValidation.registerValidator(phnTxt,  Validator.createRegexValidator("Must be a phn number", "\\+?[0-9]{11,13}$", Severity.ERROR));
+            customerValidation.registerValidator(emailTxt, Validator.createRegexValidator("Must be an email address", Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE), Severity.WARNING));
+            customerValidation.registerValidator(soldByTxt, Validator.createEmptyValidator("These fields must not be empty", Severity.WARNING));
+        });
+
         addOnAction();
     }
 
@@ -147,9 +164,9 @@ public class SellView {
 
 
     private void addOnAction() {
-        addBtn.disableProperty().bind(Bindings.isEmpty(cusTxt.textProperty()));
-        saveBtn.disableProperty().bind(Bindings.isEmpty(paidTxt.textProperty()));
-        //printBtn.disableProperty().bind(Bindings.isEmpty(paidTxt.textProperty()));
+        addBtn.disableProperty().bind(customerValidation.invalidProperty());
+        saveBtn.disableProperty().bind(priceValidation.invalidProperty());
+        printBtn.disableProperty().bind(priceValidation.invalidProperty());
         addBtn.setOnAction((ActionEvent event) -> {
 
             Dialog<AddProductDialog.DialogModel> dialog = AddProductDialog.getSellDialogue(dataProductName);
@@ -349,6 +366,7 @@ public class SellView {
         phnTxt.setEditable(editable);
         emailTxt.setEditable(editable);
         strTxt.setEditable(editable);
+        invoiceType.setDisable(!editable);
     }
 
     void setBtnVisible(boolean p){

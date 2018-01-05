@@ -55,7 +55,7 @@
             <Label text="Invoice ID" GridPane.columnIndex="3" GridPane.rowIndex="2" />
             <TextField fx:id="invoiceTxt" editable="false" GridPane.columnIndex="4" GridPane.rowIndex="2" />
             <Label text="Date" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-            <DatePicker fx:id="datePick" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+            <DatePicker fx:id="datePick" editable="false" GridPane.columnIndex="4" GridPane.rowIndex="3" />
             <Label text="Sold By" GridPane.columnIndex="3" GridPane.rowIndex="4" />
             <TextField fx:id="soldByTxt" GridPane.columnIndex="4" GridPane.rowIndex="4" />
             <Label text="Invoice Type" GridPane.columnIndex="3" GridPane.rowIndex="5" />

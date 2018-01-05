@@ -1,17 +1,21 @@
 package add.product;
 
 import data_helper.DataHelper;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import model.Product;
+import org.controlsfx.validation.Severity;
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.Validator;
 
 public class AddProduct {
-    @FXML
-    TextField nametxt, codetxt, companytxt, pratetxt, wratetxt, rratetxt, stocktxt;
-    @FXML
-    Button addbtn;
+    @FXML TextField nametxt, codetxt, companytxt, pratetxt, wratetxt, rratetxt, stocktxt;
+    @FXML Button addbtn;
+
+    private ValidationSupport validation;
 
     public void initialize(){
 
@@ -22,15 +26,18 @@ public class AddProduct {
 //            nametxt.setStyle("-fx-text-box-border: red ; -fx-focus-color: red ;");
 //        });
 
-        addbtn.disableProperty().bind(Bindings.isEmpty(nametxt.textProperty())
-                        .or(Bindings.isEmpty(codetxt.textProperty()))
-                        .or(Bindings.isEmpty(companytxt.textProperty()))
-                        .or(Bindings.isEmpty(pratetxt.textProperty()))
-                        .or(Bindings.isEmpty(wratetxt.textProperty()))
-                        .or(Bindings.isEmpty(pratetxt.textProperty()))
-                        .or(Bindings.isEmpty(rratetxt.textProperty()))
-                        .or(Bindings.isEmpty(stocktxt.textProperty()))
-        );
+        validation = new ValidationSupport();
+        Platform.runLater(()->{
+            validation.registerValidator(nametxt, Validator.createEmptyValidator("This field must not be empty"));
+            validation.registerValidator(codetxt, Validator.createEmptyValidator("This field must not be empty"));
+            validation.registerValidator(companytxt, Validator.createEmptyValidator("This field must not be empty"));
+            validation.registerValidator(stocktxt, Validator.createRegexValidator("Must be a number", "[0-9]+", Severity.ERROR));
+            validation.registerValidator(pratetxt, Validator.createRegexValidator("Must be a Decimal", "[0-9]+\\.?[0-9]*", Severity.ERROR));
+            validation.registerValidator(wratetxt, Validator.createRegexValidator("Must be a Decimal", "[0-9]+\\.?[0-9]*", Severity.ERROR));
+            validation.registerValidator(rratetxt, Validator.createRegexValidator("Must be a Decimal", "[0-9]+\\.?[0-9]*", Severity.ERROR));
+        });
+
+        addbtn.disableProperty().bind(validation.invalidProperty());
 
         addbtn.setOnAction(event -> {
             double prate, wrate, rrate;
@@ -57,6 +64,3 @@ public class AddProduct {
         });
     }
 }
-
-//todo-me add pratetxt, wratetxt, rratetxt, stocktxt validation logic
-//todo-me add some view to show message to user if insert is failed

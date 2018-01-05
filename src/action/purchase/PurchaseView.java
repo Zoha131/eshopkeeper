@@ -23,11 +23,15 @@ import javafx.util.converter.IntegerStringConverter;
 import model.*;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
+import org.controlsfx.validation.Severity;
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.Validator;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class PurchaseView {
     @FXML TextField supNameTxt, strNameTxt, adrsTxt, phnTxt, idTxt, purchasedByTxt, totalTxt, paidTxt, dueTxt;
@@ -54,6 +58,7 @@ public class PurchaseView {
     private int serial=0;
     private Product addProduct;
     private DateStringConverter dateStringConverter;
+    private ValidationSupport priceValidation, supplierValidation;
 
 
 
@@ -98,6 +103,23 @@ public class PurchaseView {
             setTextEditable(false);
 
         });
+
+        //adding validation
+        priceValidation = new ValidationSupport();
+        supplierValidation = new ValidationSupport();
+        Platform.runLater(()->{
+            priceValidation.registerValidator(paidTxt, Validator.createRegexValidator("Must be a Decimal", "[0-9]+\\.?[0-9]*", Severity.ERROR));
+            priceValidation.registerValidator(totalTxt, Validator.createRegexValidator("Must be a Decimal", "[0-9]+\\.?[0-9]*", Severity.ERROR));
+            priceValidation.registerValidator(dueTxt, Validator.createRegexValidator("Must be a Decimal", "[0-9]+\\.?[0-9]*", Severity.ERROR));
+        });
+        Platform.runLater(()->{
+            supplierValidation.registerValidator(supNameTxt, Validator.createEmptyValidator("These fields must not be empty"));
+            supplierValidation.registerValidator(strNameTxt, Validator.createEmptyValidator("These fields must not be empty"));
+            supplierValidation.registerValidator(adrsTxt, Validator.createEmptyValidator("These fields must not be empty"));
+            supplierValidation.registerValidator(phnTxt,  Validator.createRegexValidator("Must be a phn number", "\\+?[0-9]{11,13}$", Severity.ERROR));
+            supplierValidation.registerValidator(purchasedByTxt, Validator.createEmptyValidator("These fields must not be empty", Severity.WARNING));
+        });
+
         addOnAction();
     }
 
@@ -109,9 +131,9 @@ public class PurchaseView {
     }
 
     private void addOnAction() {
-        addBtn.disableProperty().bind(Bindings.isEmpty(supNameTxt.textProperty()));
-        addNewBtn.disableProperty().bind(Bindings.isEmpty(supNameTxt.textProperty()));
-        saveBtn.disableProperty().bind(Bindings.isEmpty(totalTxt.textProperty()).or(Bindings.isEmpty(paidTxt.textProperty())));
+        addBtn.disableProperty().bind(supplierValidation.invalidProperty());
+        addNewBtn.disableProperty().bind(supplierValidation.invalidProperty());
+        saveBtn.disableProperty().bind(priceValidation.invalidProperty());
 
         addBtn.setOnAction((ActionEvent event) -> {
 
@@ -228,6 +250,12 @@ public class PurchaseView {
             totalTxt.setText(String.valueOf(invoice.getPrice()));
 
             itemTable.setItems(invoice.getData());
+            itemTable.refresh();
+            /*
+            * itemTable.getItems().setAll(invoice.getData());
+            * I don't know why this code don't work here.
+            * This line works fine in SellView class in line 309
+            */
             itemTable.requestFocus();
         });
 
@@ -248,6 +276,7 @@ public class PurchaseView {
             totalTxt.setText(String.valueOf(invoice.getPrice()));
 
             itemTable.setItems(invoice.getData());
+            itemTable.refresh();
             itemTable.requestFocus();
             //todo-me Tab->next edit cell Enter->commit edit
         });
@@ -267,6 +296,7 @@ public class PurchaseView {
             totalTxt.setText(String.valueOf(invoice.getPrice()));
 
             itemTable.setItems(invoice.getData());
+            itemTable.refresh();
             itemTable.requestFocus();
         });
 
@@ -285,6 +315,7 @@ public class PurchaseView {
             totalTxt.setText(String.valueOf(invoice.getPrice()));
 
             itemTable.setItems(invoice.getData());
+            itemTable.refresh();
             itemTable.requestFocus();
         });
 

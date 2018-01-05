@@ -45,7 +45,7 @@
         <Label text="Tr. ID" GridPane.columnIndex="3" GridPane.rowIndex="2" />
         <TextField fx:id="trIdTxt" editable="false" GridPane.columnIndex="4" GridPane.rowIndex="2" />
         <Label text="Date" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-        <DatePicker fx:id="datePick" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+        <DatePicker fx:id="datePick" editable="false" GridPane.columnIndex="4" GridPane.rowIndex="3" />
         <Label text="Taken By" GridPane.columnIndex="3" GridPane.rowIndex="4" />
         <TextField fx:id="takenbyTxt" GridPane.columnIndex="4" GridPane.rowIndex="4" />
         <Label text="Amount" GridPane.columnIndex="3" GridPane.rowIndex="5" />

@@ -3,18 +3,29 @@ package dialog;
 import converter.ModelStringConverter;
 import data_helper.DataHelper;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import model.Item;
 import model.Product;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
+import org.controlsfx.validation.Severity;
+import org.controlsfx.validation.ValidationResult;
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.Validator;
+
+import java.util.regex.Pattern;
 
 public class AddProductDialog {
 
@@ -45,10 +56,14 @@ public class AddProductDialog {
         grid.add(new Label("Quantity:"), 0, 1);
         grid.add(quantity, 1, 1);
 
+        //adding validation
+        ValidationSupport validationSupport = new ValidationSupport();
+        validationSupport.registerValidator(quantity, Validator.createRegexValidator("Must be a number", "[0-9]+", Severity.ERROR));
+
         // Enable/Disable login button depending on whether a productName was entered.
         BooleanProperty autoComletedProperty = new SimpleBooleanProperty(false);
         Node selectButton = sellDialogue.getDialogPane().lookupButton(loginButtonType);
-        selectButton.disableProperty().bind(autoComletedProperty.not().or(Bindings.isEmpty(quantity.textProperty())));
+        selectButton.disableProperty().bind(autoComletedProperty.not().or(validationSupport.invalidProperty()));
         binding.setOnAutoCompleted((AutoCompletionBinding.AutoCompletionEvent<String> eventAuto)-> {
             autoComletedProperty.setValue(true);
         });
@@ -62,7 +77,6 @@ public class AddProductDialog {
         sellDialogue.setResultConverter(dialogButton -> {
             if (dialogButton == loginButtonType) {
                 return new DialogModel(productName.getText(), Integer.parseInt(quantity.getText()));
-                //todo-me to add data validation logic
             }
             return null;
         });
@@ -101,11 +115,17 @@ public class AddProductDialog {
         grid.add(new Label("Purchase Rate:"), 0, 2);
         grid.add(prate, 1, 2);
 
+        //adding validation
+        ValidationSupport validationSupport = new ValidationSupport();
+        Platform.runLater(()->{
+            validationSupport.registerValidator(quantity, Validator.createRegexValidator("Must be a number", "[0-9]+", Severity.ERROR));
+            validationSupport.registerValidator(prate, Validator.createRegexValidator("Must be a Decimal", "[0-9]+\\.?[0-9]*", Severity.ERROR));
+        });
 
         // Enable/Disable login button depending on whether a productName was entered.
         BooleanProperty autoComletedProperty = new SimpleBooleanProperty(false);
         Node selectButton = sellDialogue.getDialogPane().lookupButton(loginButtonType);
-        selectButton.disableProperty().bind(autoComletedProperty.not().or(Bindings.isEmpty(quantity.textProperty())));
+        selectButton.disableProperty().bind(autoComletedProperty.not().or(validationSupport.invalidProperty()));
         binding.setOnAutoCompleted((AutoCompletionBinding.AutoCompletionEvent<String> eventAuto)-> {
             autoComletedProperty.setValue(true);
         });
@@ -119,7 +139,6 @@ public class AddProductDialog {
         sellDialogue.setResultConverter(dialogButton -> {
             if (dialogButton == loginButtonType) {
                 return new DialogModel(productName.getText(), Integer.parseInt(quantity.getText()), Double.parseDouble(prate.getText()));
-                //todo-me to add data validation logic
             }
             return null;
         });
@@ -179,16 +198,21 @@ public class AddProductDialog {
         grid.add(quantity, 1, 6);
 
 
+        //adding validation
+        ValidationSupport validationSupport = new ValidationSupport();
+        Platform.runLater(()->{
+            validationSupport.registerValidator(quantity, Validator.createRegexValidator("Must be a number", "[0-9]+", Severity.ERROR));
+            validationSupport.registerValidator(prate, Validator.createRegexValidator("Must be a Decimal", "[0-9]+\\.?[0-9]*", Severity.ERROR));
+            validationSupport.registerValidator(wrate, Validator.createRegexValidator("Must be a Decimal", "[0-9]+\\.?[0-9]*", Severity.ERROR));
+            validationSupport.registerValidator(rrate, Validator.createRegexValidator("Must be a Decimal", "[0-9]+\\.?[0-9]*", Severity.ERROR));
+        });
 
         // Enable/Disable login button depending on whether a productName was entered.
         Node selectButton = sellDialogue.getDialogPane().lookupButton(loginButtonType);
         selectButton.disableProperty().bind(Bindings.isEmpty(productName.textProperty())
                 .or(Bindings.isEmpty(code.textProperty()))
                 .or(Bindings.isEmpty(company.textProperty()))
-                .or(Bindings.isEmpty(prate.textProperty()))
-                .or(Bindings.isEmpty(rrate.textProperty()))
-                .or(Bindings.isEmpty(wrate.textProperty()))
-                .or(Bindings.isEmpty(quantity.textProperty())));
+                .or(validationSupport.invalidProperty()));
 
         sellDialogue.getDialogPane().setContent(grid);
 
@@ -210,7 +234,6 @@ public class AddProductDialog {
                 DataHelper.insertProduct(product);
 
                 return new DialogModel(productName.getText(), Integer.parseInt(quantity.getText()), Double.parseDouble(prate.getText()));
-                //todo-me to add data validation logic
             }
             return null;
         });
