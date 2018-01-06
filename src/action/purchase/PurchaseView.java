@@ -38,7 +38,7 @@ public class PurchaseView {
 
     private ScrollPane scrollPane;
 
-    private final double GRID_HEIGHT=600;
+    private final double GRID_HEIGHT=400;
     private double tableHeight = 50;
 
     ObservableList<Supplier> dataSupplier;
@@ -349,7 +349,7 @@ public class PurchaseView {
 
         //enlarge the height for better view
         tableHeight = 50;
-        purInvoiceGrid.setMinHeight(tableHeight+GRID_HEIGHT);
+        purInvoiceGrid.setMinHeight(GRID_HEIGHT);
         itemTable.setMinHeight(tableHeight);
 
         //scrollpane will be updated

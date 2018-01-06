@@ -46,7 +46,7 @@ public class SellView {
 
     private ScrollPane scrollPane;
 
-    private final double GRID_HEIGHT=750;
+    private final double GRID_HEIGHT=525;
     private double tableHeight = 50;
 
     ObservableList<String> dataCustomerName;
@@ -279,7 +279,7 @@ public class SellView {
         itemTable.getItems().setAll(invoice.getData());
         tableHeight = 50;
         itemTable.setMaxHeight(tableHeight);
-        grdPan.setMinHeight(tableHeight+GRID_HEIGHT);
+        grdPan.setMinHeight(GRID_HEIGHT);
         scrollPane.setVvalue(0);
     }
 
@@ -409,5 +409,7 @@ public class SellView {
     public static Invoice<Customer> getInvoice(){
         return SellView.invoice;
     }
+
+    //todo-me add a logic so that a product can't be added twice in the invoice
 
 }

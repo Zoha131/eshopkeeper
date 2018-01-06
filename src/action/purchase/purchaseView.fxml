@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<GridPane fx:id="purInvoiceGrid" alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="action.purchase.PurchaseView">
+<GridPane fx:id="purInvoiceGrid" alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="action.purchase.PurchaseView">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -20,20 +20,20 @@
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints maxHeight="189.0" minHeight="0.0" prefHeight="22.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="179.0" minHeight="0.0" prefHeight="59.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="179.0" minHeight="0.0" prefHeight="41.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="210.0" minHeight="0.0" prefHeight="41.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="250.0" minHeight="0.0" prefHeight="47.0" vgrow="SOMETIMES" />
-        <RowConstraints fx:id="constrain" maxHeight="242.0" minHeight="0.0" prefHeight="49.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="9999.0" minHeight="0.0" prefHeight="38.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="9999.0" minHeight="0.0" prefHeight="67.0" vgrow="ALWAYS" />
-        <RowConstraints maxHeight="466.0" minHeight="0.0" prefHeight="56.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="466.0" minHeight="0.0" prefHeight="59.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="466.0" minHeight="0.0" prefHeight="69.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="466.0" minHeight="0.0" prefHeight="85.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="466.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
-      <RowConstraints />
+        <RowConstraints maxHeight="189.0" minHeight="0.0" prefHeight="11.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="179.0" minHeight="0.0" prefHeight="34.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="179.0" minHeight="0.0" prefHeight="35.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="210.0" minHeight="0.0" prefHeight="35.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="250.0" minHeight="0.0" prefHeight="35.0" vgrow="SOMETIMES" />
+        <RowConstraints fx:id="constrain" maxHeight="242.0" minHeight="0.0" prefHeight="34.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="9999.0" minHeight="0.0" prefHeight="9.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="9999.0" minHeight="0.0" prefHeight="58.0" vgrow="ALWAYS" />
+        <RowConstraints maxHeight="466.0" minHeight="0.0" prefHeight="32.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="466.0" minHeight="0.0" prefHeight="34.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="466.0" minHeight="0.0" prefHeight="34.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="466.0" minHeight="0.0" prefHeight="45.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="466.0" minHeight="0.0" prefHeight="6.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="17.0" minHeight="2.0" prefHeight="5.0" />
     </rowConstraints>
     <children>
         <Label alignment="CENTER" contentDisplay="CENTER" text="Purchase" textAlignment="CENTER" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="1">
@@ -64,10 +64,10 @@
         </TableView>
         <Button fx:id="addBtn" mnemonicParsing="false" text="Add Item" GridPane.halignment="CENTER" GridPane.rowIndex="9" />
       <Button fx:id="addNewBtn" mnemonicParsing="false" text="Add New Item" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-      <Button fx:id="saveBtn" mnemonicParsing="false" text="Save" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="11" />
+      <Button fx:id="saveBtn" mnemonicParsing="false" text="Save" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="BOTTOM" />
       <Label text="Store Name" GridPane.rowIndex="3" />
       <TextField fx:id="strNameTxt" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-      <Button fx:id="clrBtn" mnemonicParsing="false" text="Clear" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="11" />
+      <Button fx:id="clrBtn" mnemonicParsing="false" text="Clear" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="BOTTOM" />
 
     </children>
     <padding>

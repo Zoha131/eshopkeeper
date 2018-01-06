@@ -1,5 +1,7 @@
 package data_helper;
 
+import dialog.Toast;
+import home.Main;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.*;
@@ -17,6 +19,7 @@ public class DataHelper {
             return conn;
         }catch (Exception e){
             System.out.println("sqlite Connection failed "+e.getMessage());
+            Toast.makeText(Main.getMainStage(), "Database Connection Failed", 2000,500,500);
         }
 
         return null;

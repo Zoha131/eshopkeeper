@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -56,7 +57,7 @@ public class Main extends Application {
         primaryStage.setTitle("eShopkeeper");
         primaryStage.setScene(new Scene(root, 1000, 600));
 
-        //primaryStage.setMaximized(true);
+        primaryStage.getIcons().add(new Image("/bag.png"));
         primaryStage.show();
 
     }
@@ -69,12 +70,12 @@ public class Main extends Application {
     private MenuBar getMenubar(){
         MenuBar menuBar = new MenuBar();
 
-        Menu data = new Menu("Data");
-        Menu action = new Menu("Action");
-        Menu history = new Menu("History");
+        Menu data = new Menu("_Data");
+        Menu action = new Menu("_Action");
+        Menu history = new Menu("_History");
         Menu help = new Menu("Help");
 
-        MenuItem add = new MenuItem("Add        ");
+        MenuItem add = new MenuItem("_Add        ");
         add.setOnAction(event -> {
             try{
                 TabPane add_tab = FXMLLoader.load(getClass().getResource("/add/add.fxml"));
@@ -87,7 +88,7 @@ public class Main extends Application {
             }
         });
 
-        MenuItem edit = new MenuItem("Edit");
+        MenuItem edit = new MenuItem("_Edit");
         edit.setOnAction(event -> {
             try{
                 TabPane edit_tab = FXMLLoader.load(getClass().getResource("/edit/edit.fxml"));
@@ -101,7 +102,7 @@ public class Main extends Application {
             }
         });
 
-        MenuItem sell = new MenuItem("Sell");
+        MenuItem sell = new MenuItem("_Sell");
         sell.setOnAction(event -> {
             try{
 
@@ -124,7 +125,7 @@ public class Main extends Application {
             }
         });
 
-        MenuItem transaction = new MenuItem("Transaction");
+        MenuItem transaction = new MenuItem("_Transaction");
         transaction.setOnAction(event -> {
             try{
                 Parent parent = FXMLLoader.load(getClass().getResource("/action/transaction/addTransaction.fxml"));
@@ -139,7 +140,7 @@ public class Main extends Application {
             }
         });
 
-        MenuItem productHistory = new MenuItem("Product History");
+        MenuItem productHistory = new MenuItem("_Product History");
         productHistory.setOnAction(event -> {
             try{
                 Parent parent = FXMLLoader.load(getClass().getResource("/history/sell/customer/customerHistory.fxml"));
@@ -154,7 +155,7 @@ public class Main extends Application {
             }
         });
 
-        MenuItem transactionHistory = new MenuItem("Transaction History");
+        MenuItem transactionHistory = new MenuItem("_Transaction History");
         transactionHistory.setOnAction(event -> {
             try{
                 Parent parent = FXMLLoader.load(getClass().getResource("/history/transaction/transactionHistory.fxml"));
@@ -169,7 +170,7 @@ public class Main extends Application {
             }
         });
 
-        MenuItem logout = new MenuItem("Log Out");
+        MenuItem logout = new MenuItem("_Log Out");
         logout.setOnAction(event -> {
             try{
                 Parent loginView = FXMLLoader.load(getClass().getResource("/login/login.fxml"));
@@ -184,7 +185,7 @@ public class Main extends Application {
             }
         });
 
-        MenuItem purchase = new MenuItem("Purchase");
+        MenuItem purchase = new MenuItem("_Purchase");
         purchase.setOnAction(event -> {
             try{
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/action/purchase/purchaseView.fxml"));
@@ -206,7 +207,20 @@ public class Main extends Application {
             }
         });
 
-        MenuItem about = new MenuItem("About");
+        MenuItem about = new MenuItem("_About");
+        about.setOnAction(event -> {
+            try{
+                Parent parent = FXMLLoader.load(getClass().getResource("/help/about/about.fxml"));
+                boolean sameView = Main.getRoot().getCenter().getId().equals(parent.getId());
+
+                if(!sameView){
+                    Main.getRoot().setCenter(parent);
+                }
+
+            }catch (Exception e){
+                System.out.println("error " + e);
+            }
+        });
 
         data.getItems().addAll(add, edit);
         action.getItems().addAll(sell,purchase, transaction);
