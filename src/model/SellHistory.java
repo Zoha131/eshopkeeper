@@ -1,19 +1,20 @@
 package model;
 
-import converter.DateStringConverter;
+import converter.MyDateConverter;
 
 import java.time.LocalDate;
 
 public class SellHistory {
     private String name, soldBy, strDate, company;
+    //here name means product name
     private LocalDate date;
     private double rate, amount;
     private int quantity, prductId;
 
-    private DateStringConverter converter;
+    private MyDateConverter converter;
 
     public SellHistory(String name, String company, String soldBy, String date, double rate, int quantity, int prductId) {
-        converter = new DateStringConverter();
+        converter = new MyDateConverter();
         this.name = name;
         this.company = company;
         this.soldBy = soldBy;

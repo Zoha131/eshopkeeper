@@ -1,7 +1,7 @@
 package action.purchase;
 
 import dialog.AddProductDialog;
-import converter.DateStringConverter;
+import converter.MyDateConverter;
 import converter.ModelStringConverter;
 import data_helper.DataHelper;
 import home.Main;
@@ -53,7 +53,7 @@ public class PurchaseView {
     private Invoice<Supplier> invoice;
     private int serial=0;
     private Product addProduct;
-    private DateStringConverter dateStringConverter;
+    private MyDateConverter myDateConverter;
     private ValidationSupport priceValidation, supplierValidation;
 
 
@@ -62,8 +62,8 @@ public class PurchaseView {
 
         idTxt.setText(UUID.randomUUID().toString());
 
-        dateStringConverter = new DateStringConverter();
-        datePick.setConverter(dateStringConverter);
+        myDateConverter = new MyDateConverter();
+        datePick.setConverter(myDateConverter);
         datePick.setValue(LocalDate.now());
 
         // to update the dueTxt with total and paid text

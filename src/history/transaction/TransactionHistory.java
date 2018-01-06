@@ -1,4 +1,4 @@
-package history.sell.customer;
+package history.transaction;
 
 import converter.MyDateConverter;
 import converter.ModelStringConverter;
@@ -9,7 +9,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import model.*;
+import model.Customer;
+import model.SellHistory;
+import model.Supplier;
+import model.Transaction;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
@@ -18,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CustomerHistory {
+public class TransactionHistory {
     @FXML TextField nameTxt;
     @FXML DatePicker fromDatePic, toDatePic;
-    @FXML TableView<SellHistory> mainTbl;
+    @FXML TableView<Transaction> mainTbl;
     @FXML Label tProdLbl,tQuanLbl,tAmnLbl;
     @FXML Button goBtn;
     @FXML ComboBox<String> typeCombo;
@@ -36,7 +39,7 @@ public class CustomerHistory {
     private ModelStringConverter<Supplier> supplierModelStringConverter;
     AutoCompletionBinding<String> supplierBinding;
 
-    private ObservableList<SellHistory> dataSellHistory;
+    private ObservableList<Transaction> dataTransaction;
     private MyDateConverter dateConverter;
 
 
@@ -68,9 +71,9 @@ public class CustomerHistory {
                 customerBinding.setOnAutoCompleted(BindingEvent -> {
                     //setting items to table
                     Customer customer = customerStringConverter.fromString(BindingEvent.getCompletion());
-                    dataSellHistory = DataHelper.getSellHistory(customer.getId());
-                    mainTbl.setItems(dataSellHistory);
-                    updateSummery(dataSellHistory);
+                    dataTransaction = DataHelper.getSellTransaction(customer.getId());
+                    mainTbl.setItems(dataTransaction);
+                    updateSummery(dataTransaction);
                 });
 
             }
@@ -90,9 +93,9 @@ public class CustomerHistory {
                 supplierBinding.setOnAutoCompleted(BindingEvent -> {
                     //setting items to table
                     Supplier supplier = supplierModelStringConverter.fromString(BindingEvent.getCompletion());
-                    dataSellHistory = DataHelper.getPurchaseHistory(supplier.getId());
-                    mainTbl.setItems(dataSellHistory);
-                    updateSummery(dataSellHistory);
+                    dataTransaction = DataHelper.getPurchaseTransaction(supplier.getId());
+                    mainTbl.setItems(dataTransaction);
+                    updateSummery(dataTransaction);
                 });
             }
         });
@@ -102,10 +105,10 @@ public class CustomerHistory {
         goBtn.setOnAction(event -> {
             LocalDate from = fromDatePic.getValue();
             LocalDate to = toDatePic.getValue();
-            ObservableList<SellHistory> filteredData = FXCollections.observableArrayList();
-            for(SellHistory history: dataSellHistory){
-                if(history.getDate().compareTo(from)>=0 && history.getDate().compareTo(to)<=0){
-                    filteredData.add(history);
+            ObservableList<Transaction> filteredData = FXCollections.observableArrayList();
+            for(Transaction transaction: dataTransaction){
+                if(transaction.getLocalDate().compareTo(from)>=0 && transaction.getLocalDate().compareTo(to)<=0){
+                    filteredData.add(transaction);
                 }
             }
             mainTbl.setItems(filteredData);
@@ -121,31 +124,26 @@ public class CustomerHistory {
         addColumn();
     }
 
-    private void updateSummery(ObservableList<SellHistory> sellHistories){
+    private void updateSummery(ObservableList<Transaction> transactions){
 
-        if(sellHistories == null){
-            tProdLbl.setText("Total Product Types: 0");
-            tQuanLbl.setText("Total Quantity:      0");
-            tAmnLbl.setText ("Total Amount:        0");
+        if(transactions == null){
+            tProdLbl.setText(String.format("%-20s %d","No of Transaction:",0));
+            tQuanLbl.setText(String.format("%-20s %f","Total Payable:",0f));
+            tAmnLbl.setText (String.format("%-20s %f","Total Paid:",0f));
             return;
         }
 
-        List<Integer> products= new ArrayList<>();
-        int tQuantity=0;
-        double tAmount=0;
+        double payable = 0;
+        double paid = 0;
 
-        for(SellHistory sel: sellHistories){
-            if(!products.contains(sel.getPrductId())){
-                products.add(sel.getPrductId());
-            }
-            tAmount += sel.getAmount();
-            tQuantity += sel.getQuantity();
+        for(Transaction transaction: transactions){
+            payable += transaction.getTotal();
+            paid += transaction.getPaid();
         }
-        System.out.println(products.size());
 
-        tProdLbl.setText("Total Product Types: "+products.size());
-        tQuanLbl.setText("Total Quantity:      "+tQuantity);
-        tAmnLbl.setText ("Total Amount:        "+tAmount);
+        tProdLbl.setText(String.format("%-20s %d","No of Transaction:",transactions.size()));
+        tQuanLbl.setText(String.format("%-20s %f","Total Payable:",payable));
+        tAmnLbl.setText (String.format("%-20s %f","Total Paid:",paid));
     }
 
     private void clear(){
@@ -158,28 +156,24 @@ public class CustomerHistory {
 
     private void addColumn(){
 
-        TableColumn<SellHistory, String> date = new TableColumn<>("Date");
-        date.setCellValueFactory(new PropertyValueFactory<>("strDate"));
+        TableColumn<Transaction, String> date = new TableColumn<>("Date");
+        date.setCellValueFactory(new PropertyValueFactory<>("date"));
 
-        TableColumn<SellHistory, String> name = new TableColumn<>("Product");
-        name.setCellValueFactory(new PropertyValueFactory<>("name"));
+        TableColumn<Transaction, Double> total = new TableColumn<>("Payable");
+        total.setCellValueFactory(new PropertyValueFactory<>("total"));
 
-        TableColumn<SellHistory, String> company = new TableColumn<>("Company");
-        company.setCellValueFactory(new PropertyValueFactory<>("company"));
+        TableColumn<Transaction, Double> paid = new TableColumn<>("Paid");
+        paid.setCellValueFactory(new PropertyValueFactory<>("paid"));
 
-        TableColumn<SellHistory, Double> rate = new TableColumn<>("Rate");
-        rate.setCellValueFactory(new PropertyValueFactory<>("rate"));
+        TableColumn<Transaction, String> takenBy = new TableColumn<>("Taken By");
+        takenBy.setCellValueFactory(new PropertyValueFactory<>("takenBy"));
 
-        TableColumn<SellHistory, Integer> quantity = new TableColumn<>("Quantity");
-        quantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        TableColumn<Transaction, String> transactionId = new TableColumn<>("Transaction ID");
+        transactionId.setCellValueFactory(new PropertyValueFactory<>("transactionId"));
+        transactionId.setMinWidth(300);
 
-        TableColumn<SellHistory, Double> amount = new TableColumn<>("Amount");
-        amount.setCellValueFactory(new PropertyValueFactory<>("amount"));
 
-        TableColumn<SellHistory, String> soldBy = new TableColumn<>("Sold By");
-        soldBy.setCellValueFactory(new PropertyValueFactory<>("soldBy"));
-
-        mainTbl.getColumns().addAll(date,name,company,rate,quantity,amount,soldBy);
+        mainTbl.getColumns().addAll(date,total,paid, takenBy, transactionId);
     }
 }
 /*

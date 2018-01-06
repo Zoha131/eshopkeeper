@@ -326,6 +326,28 @@ public class DataHelper {
         }
 
     }
+    public static ObservableList<Transaction> getPurchaseTransaction(int supplierId){
+        ObservableList<Transaction> data = FXCollections.observableArrayList();
+        String query = String.format("SELECT * FROM purchaseTransaction WHERE supplierId = %d ORDER BY id", supplierId);
+
+        try {
+            ResultSet res = getConnection().createStatement().executeQuery(query);
+            while (res.next()){
+                Transaction raw = new Transaction(res.getInt(purchaseTransaction.id.toString()),
+                        res.getInt(purchaseTransaction.supplierId.toString()),
+                        res.getDouble(purchaseTransaction.total.toString()),
+                        res.getDouble(purchaseTransaction.paid.toString()),
+                        res.getString(purchaseTransaction.date.toString()),
+                        res.getString(purchaseTransaction.transactionId.toString()),
+                        res.getString(purchaseTransaction.takenBy.toString()));
+                data.add(raw);
+            }
+            return data;
+        }catch (Exception e){
+            System.out.println(e);
+            return null;
+        }
+    }
 
     public static boolean createSellTable(){
         StringBuilder query = new StringBuilder();
@@ -451,6 +473,28 @@ public class DataHelper {
         }
 
     }
+    public static ObservableList<Transaction> getSellTransaction(int customerId){
+        ObservableList<Transaction> data = FXCollections.observableArrayList();
+        String query = String.format("SELECT * FROM sellTransaction WHERE customerId = %d ORDER BY id", customerId);
+
+        try {
+            ResultSet res = getConnection().createStatement().executeQuery(query);
+            while (res.next()){
+                Transaction raw = new Transaction(res.getInt(sellTransaction.id.toString()),
+                        res.getInt(sellTransaction.customerId.toString()),
+                        res.getDouble(sellTransaction.total.toString()),
+                        res.getDouble(sellTransaction.paid.toString()),
+                        res.getString(sellTransaction.date.toString()),
+                        res.getString(sellTransaction.transactionId.toString()),
+                        res.getString(sellTransaction.takenBy.toString()));
+                data.add(raw);
+            }
+            return data;
+        }catch (Exception e){
+            System.out.println(e);
+            return null;
+        }
+    }
 
     public static boolean createPurchaseTable(){
         StringBuilder query = new StringBuilder();
@@ -503,6 +547,34 @@ public class DataHelper {
         } catch (Exception e) {
             System.out.println("Purchase Insert "+e);
             return false;
+        }
+    }
+    public static ObservableList<SellHistory> getPurchaseHistory(int supplierId){
+        ObservableList<SellHistory> data = FXCollections.observableArrayList();
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT name, code, company, date, rate, quantity, purchasedBy, product.id as productId ");
+        query.append("FROM purchase, product ");
+        query.append("WHERE purchase.productID = product.id AND purchase.supplierId = ? ");
+        query.append("ORDER BY purchase.id ");
+        try {
+            PreparedStatement prep = conn.prepareStatement(query.toString());
+            prep.setInt(1, supplierId);
+            ResultSet res = prep.executeQuery();
+            while (res.next()){
+                SellHistory raw = new SellHistory(
+                        res.getString(product.name.toString()) +" ("+ res.getString(product.code.toString()) + ")",
+                        res.getString(product.company.toString()),
+                        res.getString(purchase.purchasedBy.toString()),
+                        res.getString(purchase.date.toString()),
+                        res.getDouble(purchase.rate.toString()),
+                        res.getInt(purchase.quantity.toString()),
+                        res.getInt("productId"));
+                data.add(raw);
+            }
+            return data;
+        }catch (Exception e){
+            System.out.println(e);
+            return null;
         }
     }
 

@@ -1,7 +1,7 @@
 package action.sell;
 
 import add.customer.AddCustomer;
-import converter.DateStringConverter;
+import converter.MyDateConverter;
 import converter.ModelStringConverter;
 import data_helper.DataHelper;
 import dialog.AddProductDialog;
@@ -56,7 +56,7 @@ public class SellView {
 
     private static Invoice<Customer> invoice;
     private int serial=1;
-    private DateStringConverter dateStringConverter;
+    private MyDateConverter myDateConverter;
     private boolean isRetailer=true;
     private ValidationSupport priceValidation, customerValidation;
 
@@ -64,8 +64,8 @@ public class SellView {
     public void initialize() {
         invoiceTxt.setText(UUID.randomUUID().toString());
 
-        dateStringConverter = new DateStringConverter();
-        datePick.setConverter(dateStringConverter);
+        myDateConverter = new MyDateConverter();
+        datePick.setConverter(myDateConverter);
         datePick.setValue(LocalDate.now());
 
         //to update the totalTxt with vatText and paid text

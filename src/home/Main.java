@@ -31,6 +31,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
 
+
+
         mainStage = primaryStage;
 
         boolean data = DataHelper.createAllTables();
@@ -56,6 +58,7 @@ public class Main extends Application {
 
         //primaryStage.setMaximized(true);
         primaryStage.show();
+
     }
 
 
@@ -66,9 +69,12 @@ public class Main extends Application {
     private MenuBar getMenubar(){
         MenuBar menuBar = new MenuBar();
 
-        Menu views = new Menu("Action");
+        Menu data = new Menu("Data");
+        Menu action = new Menu("Action");
+        Menu history = new Menu("History");
+        Menu help = new Menu("Help");
 
-        MenuItem add = new MenuItem("ADD");
+        MenuItem add = new MenuItem("Add        ");
         add.setOnAction(event -> {
             try{
                 TabPane add_tab = FXMLLoader.load(getClass().getResource("/add/add.fxml"));
@@ -95,7 +101,7 @@ public class Main extends Application {
             }
         });
 
-        MenuItem sell = new MenuItem("SellView");
+        MenuItem sell = new MenuItem("Sell");
         sell.setOnAction(event -> {
             try{
 
@@ -133,11 +139,25 @@ public class Main extends Application {
             }
         });
 
-        MenuItem sellCustomerHistory = new MenuItem("Cus History");
-        sellCustomerHistory.setOnAction(event -> {
+        MenuItem productHistory = new MenuItem("Product History");
+        productHistory.setOnAction(event -> {
             try{
                 Parent parent = FXMLLoader.load(getClass().getResource("/history/sell/customer/customerHistory.fxml"));
-                System.out.println("worked");
+                boolean sameView = Main.getRoot().getCenter().getId().equals(parent.getId());
+
+                if(!sameView){
+                    Main.getRoot().setCenter(parent);
+                }
+
+            }catch (Exception e){
+                System.out.println("Main class: error " + e);
+            }
+        });
+
+        MenuItem transactionHistory = new MenuItem("Transaction History");
+        transactionHistory.setOnAction(event -> {
+            try{
+                Parent parent = FXMLLoader.load(getClass().getResource("/history/transaction/transactionHistory.fxml"));
                 boolean sameView = Main.getRoot().getCenter().getId().equals(parent.getId());
 
                 if(!sameView){
@@ -186,15 +206,15 @@ public class Main extends Application {
             }
         });
 
-        views.getItems().addAll(add,edit,sell,purchase, transaction,sellCustomerHistory, logout);
-
-        Menu help = new Menu("Help");
         MenuItem about = new MenuItem("About");
-        help.getItems().addAll(about);
 
-        menuBar.getMenus().addAll(views,help);
+        data.getItems().addAll(add, edit);
+        action.getItems().addAll(sell,purchase, transaction);
+        history.getItems().addAll(productHistory, transactionHistory);
+        help.getItems().addAll(about, logout);
+
+        menuBar.getMenus().addAll(data,action,history,help);
         menuBar.setPrefHeight(30);
-
 
         return menuBar;
     }

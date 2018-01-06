@@ -5,7 +5,7 @@ import javafx.util.StringConverter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-public class DateStringConverter extends StringConverter<LocalDate> {
+public class MyDateConverter extends StringConverter<LocalDate> {
     String pattern = "dd-MM-yyyy";
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);
 

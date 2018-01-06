@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane fx:id="sellCustomerHistoryView" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="history.sell.customer.CustomerHistory">
+<GridPane fx:id="transactionHistory" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="history.transaction.TransactionHistory">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="115.0" minWidth="10.0" prefWidth="13.0" />
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="123.0" minWidth="10.0" prefWidth="74.0" />
@@ -47,20 +47,20 @@
         <DatePicker fx:id="toDatePic" editable="false" promptText="dd-mm-yyyy" GridPane.columnIndex="9" GridPane.rowIndex="1" />
         <Button fx:id="goBtn" mnemonicParsing="false" text="Go" GridPane.columnIndex="10" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
         <TableView fx:id="mainTbl" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="2" />
-        <Label text="Product History" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER">
+        <Label text="Transaction History" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER">
             <font>
                 <Font name="Berlin Sans FB" size="34.0" />
             </font>
         </Label>
         <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="7" GridPane.columnSpan="3" GridPane.rowIndex="4">
             <children>
-                <Label fx:id="tProdLbl" text="Total Product Types: " />
-                <Label fx:id="tQuanLbl" text="Total Quantity: ">
+                <Label fx:id="tProdLbl" text="No of Transaction:" />
+                <Label fx:id="tQuanLbl" text="Total Payable">
                     <VBox.margin>
                         <Insets bottom="15.0" top="15.0" />
                     </VBox.margin>
                 </Label>
-                <Label fx:id="tAmnLbl" text="Total Amount: " />
+                <Label fx:id="tAmnLbl" text="Total Paid" />
             </children>
         </VBox>
       <Label text="Select Type" GridPane.columnIndex="1" GridPane.rowIndex="1" />

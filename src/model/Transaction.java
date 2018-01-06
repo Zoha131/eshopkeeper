@@ -1,9 +1,15 @@
 package model;
 
+import converter.MyDateConverter;
+
+import java.time.LocalDate;
+
 public class Transaction {
     private int id, customerId;
     private double paid, total;
     private String date, transactionId, takenBy;
+    private LocalDate localDate;
+    private MyDateConverter myDateConverter;
 
     public Transaction(int id, int customerId, double paid, String date, String transactionId, String takenBy) {
         this.id = id;
@@ -15,6 +21,7 @@ public class Transaction {
     }
 
     public Transaction(int id, int customerId, double total, double paid, String date, String transactionId, String takenBy) {
+        myDateConverter = new MyDateConverter();
         this.id = id;
         this.customerId = customerId;
         this.paid = paid;
@@ -22,6 +29,7 @@ public class Transaction {
         this.date = date;
         this.transactionId = transactionId;
         this.takenBy = takenBy;
+        this.localDate = myDateConverter.fromString(date);
     }
 
     public Transaction() {
@@ -65,6 +73,14 @@ public class Transaction {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public LocalDate getLocalDate() {
+        return localDate;
+    }
+
+    public void setLocalDate(LocalDate localDate) {
+        this.localDate = localDate;
     }
 
     public String getTransactionId() {
