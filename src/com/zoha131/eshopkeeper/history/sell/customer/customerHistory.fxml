@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<GridPane fx:id="sellCustomerHistoryView" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.zoha131.eshopkeeper.history.sell.customer.CustomerHistory">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="115.0" minWidth="10.0" prefWidth="13.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="123.0" minWidth="10.0" prefWidth="74.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="173.0" minWidth="10.0" prefWidth="173.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="115.0" minWidth="10.0" prefWidth="89.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="171.0" minWidth="10.0" prefWidth="171.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="156.0" minWidth="10.0" prefWidth="96.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="111.0" minWidth="10.0" prefWidth="37.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="148.0" minWidth="10.0" prefWidth="112.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="108.0" minWidth="10.0" prefWidth="27.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="147.0" minWidth="10.0" prefWidth="112.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="76.0" minWidth="10.0" prefWidth="56.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="108.0" minHeight="10.0" prefHeight="57.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="194.0" minHeight="10.0" prefHeight="52.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="999999.0" minHeight="10.0" prefHeight="328.0" vgrow="ALWAYS" />
+        <RowConstraints maxHeight="234.0" minHeight="10.0" prefHeight="21.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="177.0" minHeight="10.0" prefHeight="78.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="28.0" minHeight="10.0" prefHeight="16.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <padding>
+        <Insets left="20.0" right="20.0" />
+    </padding>
+    <children>
+        <Label text="Name" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+        <TextField fx:id="nameTxt" promptText="Write Name" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+        <Label text="From" GridPane.columnIndex="6" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+        <DatePicker fx:id="fromDatePic" editable="false" promptText="dd-mm-yyyy" GridPane.columnIndex="7" GridPane.rowIndex="1" />
+        <Label text="To" GridPane.columnIndex="8" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+        <DatePicker fx:id="toDatePic" editable="false" promptText="dd-mm-yyyy" GridPane.columnIndex="9" GridPane.rowIndex="1" />
+        <Button fx:id="goBtn" mnemonicParsing="false" text="Go" GridPane.columnIndex="10" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+        <TableView fx:id="mainTbl" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="2" />
+        <Label text="Product History" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER">
+            <font>
+                <Font name="Berlin Sans FB" size="34.0" />
+            </font>
+        </Label>
+        <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="7" GridPane.columnSpan="3" GridPane.rowIndex="4">
+            <children>
+                <Label fx:id="tProdLbl" text="Total Product Types: " />
+                <Label fx:id="tQuanLbl" text="Total Quantity: ">
+                    <VBox.margin>
+                        <Insets bottom="15.0" top="15.0" />
+                    </VBox.margin>
+                </Label>
+                <Label fx:id="tAmnLbl" text="Total Amount: " />
+            </children>
+        </VBox>
+      <Label text="Select Type" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <ComboBox fx:id="typeCombo" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+    </children>
+</GridPane>
