@@ -4,3 +4,4 @@ eshopkeeper.db
 eshopkeeper.iml
 out/
 META-INF/
+libraries/*jar
