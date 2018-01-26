@@ -32,23 +32,16 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-
-
         mainStage = primaryStage;
-
-        boolean data = DataHelper.createAllTables();
-        System.out.println("Main:: all table created: "+ data);
 
         Parent parent = FXMLLoader.load(getClass().getResource("/com/zoha131/eshopkeeper/login/login.fxml"));
 
-
         mainMenu = this.getMenubar();
+
         root.setCenter(parent);
-
-
-
         root.setMinWidth(1000);
         root.setMinHeight(600);
+
         primaryStage.setMinWidth(1030);
         primaryStage.setMinHeight(640);
 
@@ -58,6 +51,8 @@ public class Main extends Application {
         primaryStage.getIcons().add(new Image("/bag.png"));
         primaryStage.show();
 
+        //to create database and tables if not exists
+        DataHelper.createAllTables();
     }
 
 

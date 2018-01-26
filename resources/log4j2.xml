@@ -3,7 +3,7 @@
 	<Properties>
 		<Property name="log-path">C:/logs/eshopkeeper/</Property>
 		<Property name="log-project-name">sample</Property>
-		<Property name="log-pattern">%d{ISO8601} %-5p [Sample][%t|%c{1}] %L %M %m\n</Property>
+		<Property name="log-pattern">%d{ISO8601} %-5p [%t] [%c{2}] %L %M %m\n</Property>
 		<Property name="rollover-strategy-max">7</Property>
 		<Property name="rolling-size-based">1 MB</Property>
 	</Properties>
@@ -23,7 +23,7 @@
 		</Policies>
 		<DefaultRolloverStrategy max="${rollover-strategy-max}" />
 	</RollingFile>
-	 <RollingFile name="ERROR" fileName="${log-path}/${log-project-name}-error.log" filePattern="${log-path}/${log-project-name}-error-%d-%i.log.zip">
+	 <!--<RollingFile name="ERROR" fileName="${log-path}/${log-project-name}-error.log" filePattern="${log-path}/${log-project-name}-error-%d-%i.log.zip">
 		<PatternLayout>
 			<pattern>${log-pattern}</pattern>
 		</PatternLayout>
@@ -41,22 +41,22 @@
 		</Policies>
 		<DefaultRolloverStrategy max="${rollover-strategy-max}" />
 		<Filters>
-			<!-- Now deny warn, error and fatal messages -->
+			&lt;!&ndash; Now deny warn, error and fatal messages &ndash;&gt;
 			<ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL" />
 			<ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL" />
 			<ThresholdFilter level="fatal" onMatch="DENY" onMismatch="NEUTRAL" />
 
-			<!-- This filter accepts info, warn, error, fatal and denies debug/trace -->
+			&lt;!&ndash; This filter accepts info, warn, error, fatal and denies debug/trace &ndash;&gt;
 			<ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" />
 		</Filters>
-	</RollingFile>
+	</RollingFile>-->
 	</appenders>
 	<Loggers>
-		<logger name="com.zoha131.eshopkeeper.data_helper" level="trace" additivity="false">
+		<logger name="com.zoha131.eshopkeeper" level="trace" additivity="false">
 			<AppenderRef ref="Console" />
-			<AppenderRef ref="ERROR" level="error" />
 			<AppenderRef ref="DEBUG" level="debug" />
-			<AppenderRef ref="INFO" level="info" />
+			<!--<AppenderRef ref="ERROR" level="error" />
+			<AppenderRef ref="INFO" level="info" />-->
 		</logger>
 	</Loggers>
 </configuration>

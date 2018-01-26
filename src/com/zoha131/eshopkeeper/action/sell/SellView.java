@@ -1,6 +1,7 @@
 package com.zoha131.eshopkeeper.action.sell;
 
 import com.zoha131.eshopkeeper.add.customer.AddCustomer;
+import com.zoha131.eshopkeeper.converter.CustomerConverter;
 import com.zoha131.eshopkeeper.converter.MyDateConverter;
 import com.zoha131.eshopkeeper.converter.ModelStringConverter;
 import com.zoha131.eshopkeeper.data_helper.DataHelper;
@@ -22,6 +23,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.util.converter.IntegerStringConverter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.validation.Severity;
@@ -50,7 +53,7 @@ public class SellView {
     private double tableHeight = 50;
 
     ObservableList<String> dataCustomerName;
-    ModelStringConverter<Customer> converterCustomer;
+    CustomerConverter converterCustomer;
     ObservableList<Customer> dataCustomer;
 
 
@@ -59,6 +62,8 @@ public class SellView {
     private MyDateConverter myDateConverter;
     private boolean isRetailer=true;
     private ValidationSupport priceValidation, customerValidation;
+
+    private static Logger log = LogManager.getLogger(SellView.class.getName());
 
 
     public void initialize() {
@@ -78,9 +83,9 @@ public class SellView {
 
         dataCustomer = DataHelper.getCustomer();
         dataCustomerName = FXCollections.observableArrayList();
-        converterCustomer = new ModelStringConverter<>(dataCustomer);
+        converterCustomer = new CustomerConverter(dataCustomer);
         for (Customer cus : dataCustomer) {
-            dataCustomerName.add(cus.getName());
+            dataCustomerName.add(converterCustomer.toString(cus));
         }
 
         //setting the AddProductDialoge class
@@ -208,10 +213,11 @@ public class SellView {
                     Platform.runLater(()->{
                         grdPan.setOpacity(1);
                         scrollPane.setVvalue(0);
+                        log.debug("SellPurched Saved Successfully for the Customer: " + customer.getId());
 
                         //updating the data so that the stock in the ui would be updated.
                         //if I don't do this, then when the seller try to sell to multiple
-                        // customer the stock in the ui don't tell the current stock
+                        //customer the stock in the ui don't tell the current stock
                         AddProductDialog.setDataProduct(DataHelper.getProduct());
                     });
                 }
@@ -338,10 +344,9 @@ public class SellView {
             PageLayout pageLayout = printer.createPageLayout(Paper.A4, PageOrientation.PORTRAIT, Printer.MarginType.HARDWARE_MINIMUM);
             PrinterJob job = PrinterJob.createPrinterJob();
 
-
             setBtnVisible(false);
 
-            if (job != null ) {
+            if (job != null  && job.showPrintDialog(totalTxt.getScene().getWindow())) {
                 boolean success = false;
 
                 for(int i=1;i<=pages;i++){
@@ -353,18 +358,18 @@ public class SellView {
                 }
                 if (success) {
                     job.endJob();
-
                 }
             }
             setBtnVisible(true);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Print Exception: "+ e);
         }
 
     }
 
     private void setEditable(boolean editable){
+        cusTxt.setEditable(editable);
         adrsTxt.setEditable(editable);
         phnTxt.setEditable(editable);
         emailTxt.setEditable(editable);
@@ -385,7 +390,7 @@ public class SellView {
             total = Double.parseDouble(totalTxt.getText());
             paid = Double.parseDouble(paidTxt.getText());
         }catch (NumberFormatException e){
-            System.out.println("PuchaseView: paidTxt Property Exception");
+            //todo-me add some code here
         }finally {
             double due = total-paid;
             dueTxt.setText(String.format("%.2f",due));
@@ -399,7 +404,7 @@ public class SellView {
             price = Double.parseDouble(priceTxt.getText());
             vat = Double.parseDouble(vatTxt.getText());
         }catch (NumberFormatException e){
-            System.out.println("SellView: VatText property Exception");
+            //todo-me add some code here
         }finally {
             double total = price+((price*vat)/100);
             totalTxt.setText(String.format("%.2f", total));

@@ -14,22 +14,17 @@ public class DataHelper {
 
     private static Logger log = LogManager.getLogger(DataHelper.class.getName());
 
-    private static Connection conn;
 
-
-    public static Connection getConnection(){
+    private static Connection getConnection(){
         try{
-            conn = DriverManager.getConnection("jdbc:sqlite:eshopkeeper.db");
-            return conn;
+            return DriverManager.getConnection("jdbc:sqlite:eshopkeeper.db");
         }catch (Exception e){
-            System.out.println("sqlite Connection failed "+e.getMessage());
-            Toast.makeText(Main.getMainStage(), "Database Connection Failed", 2000,500,500);
+            log.error("sqlite Connection failed "+e);
+            return null;
         }
-
-        return null;
     }
 
-    public static boolean creatCustomerTable(){
+    private static boolean creatCustomerTable(){
         StringBuilder query = new StringBuilder();
         query.append("CREATE TABLE IF NOT EXISTS customer ( ");
         query.append(customer.id);
@@ -48,19 +43,6 @@ public class DataHelper {
         query.append(" TEXT NOT NULL, ");
         query.append(customer.due);
         query.append(" REAL DEFAULT 0.00 ) ");
-
-        /*try{
-            Connection conn = getConnection();
-            PreparedStatement prp = conn.prepareStatement(query.toString());
-            prp.execute();
-
-            prp.close();
-            conn.close();
-            return true;
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            return false;
-        }*/
 
         return execute(query.toString());
     }
@@ -92,7 +74,7 @@ public class DataHelper {
             conn.close();
             return true;
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            log.error("Customer Insert Exception ", e);
             return false;
         }
     }
@@ -116,12 +98,12 @@ public class DataHelper {
 
             return data;
         }catch (Exception e){
-            System.out.println(e);
+            log.error("Customer get exception ", e);
             return null;
         }
     }
 
-    public static boolean creatSupplierTable(){
+    private static boolean creatSupplierTable(){
         StringBuilder query = new StringBuilder();
         query.append("CREATE TABLE IF NOT EXISTS supplier ( ");
         query.append(supplier.id);
@@ -139,18 +121,6 @@ public class DataHelper {
         query.append(supplier.due);
         query.append(" REAL NOT NULL DEFAULT 0.00 ) ");
 
-        /*try{
-            Connection conn = getConnection();
-            PreparedStatement prp = conn.prepareStatement(query.toString());
-            prp.execute();
-
-            prp.close();
-            conn.close();
-            return true;
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            return false;
-        }*/
         return execute(query.toString());
     }
     public static boolean insertSupplier(Supplier sup){
@@ -178,7 +148,7 @@ public class DataHelper {
             conn.close();
             return true;
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            log.error("Supplier insert exception ", e);
             return false;
         }
     }
@@ -200,12 +170,12 @@ public class DataHelper {
             }
             return data;
         }catch (Exception e){
-            System.out.println(e);
+            log.error("Supplier get exception ", e);
             return null;
         }
     }
 
-    public static boolean createProductTable() {
+    private static boolean createProductTable() {
         StringBuilder query = new StringBuilder();
         query.append("CREATE TABLE IF NOT EXISTS product ( ");
         query.append(product.id);
@@ -225,23 +195,9 @@ public class DataHelper {
         query.append(product.stock);
         query.append(" INTEGER NOT NULL ) ");
 
-
-        /*try {
-            Connection conn = getConnection();
-            PreparedStatement prp = conn.prepareStatement(query.toString());
-            prp.execute();
-
-            conn.close();
-            return true;
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            return false;
-        }*/
-
         return execute(query.toString());
     }
     public static boolean insertProduct(Product prod){
-        //String query = "INSERT INTO product ( name, code, consumer_rate, holesale_rate, company) VALUES (?,?,?,?,?)";
         String query = String.format("INSERT INTO product ( %s, %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?,?)",
                         product.name, product.code, product.company, product.prate,
                         product.wrate, product.rrate, product.stock);
@@ -261,7 +217,7 @@ public class DataHelper {
             conn.close();
             return true;
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            log.error("Product insert exception ", e);
             return false;
         }
     }
@@ -283,12 +239,12 @@ public class DataHelper {
             }
             return data;
         }catch (Exception e){
-            System.out.println(e);
+            log.error("Product get exception ", e);
             return null;
         }
     }
 
-    public static boolean createSellTransactionTable(){
+    private static boolean createSellTransactionTable(){
         StringBuilder query = new StringBuilder();
         query.append("CREATE TABLE IF NOT EXISTS sellTransaction ( ");
         query.append(sellTransaction.id);
@@ -328,35 +284,35 @@ public class DataHelper {
             conn.close();
             return true;
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            log.error("sellTransaction insert exception ", e);
             return false;
         }
 
     }
-    public static ObservableList<Transaction> getPurchaseTransaction(int supplierId){
+    public static ObservableList<Transaction> getSellTransaction(int customerId){
         ObservableList<Transaction> data = FXCollections.observableArrayList();
-        String query = String.format("SELECT * FROM purchaseTransaction WHERE supplierId = %d ORDER BY id", supplierId);
+        String query = String.format("SELECT * FROM sellTransaction WHERE customerId = %d ORDER BY id", customerId);
 
         try {
             ResultSet res = getConnection().createStatement().executeQuery(query);
             while (res.next()){
-                Transaction raw = new Transaction(res.getInt(purchaseTransaction.id.toString()),
-                        res.getInt(purchaseTransaction.supplierId.toString()),
-                        res.getDouble(purchaseTransaction.total.toString()),
-                        res.getDouble(purchaseTransaction.paid.toString()),
-                        res.getString(purchaseTransaction.date.toString()),
-                        res.getString(purchaseTransaction.transactionId.toString()),
-                        res.getString(purchaseTransaction.takenBy.toString()));
+                Transaction raw = new Transaction(res.getInt(sellTransaction.id.toString()),
+                        res.getInt(sellTransaction.customerId.toString()),
+                        res.getDouble(sellTransaction.total.toString()),
+                        res.getDouble(sellTransaction.paid.toString()),
+                        res.getString(sellTransaction.date.toString()),
+                        res.getString(sellTransaction.transactionId.toString()),
+                        res.getString(sellTransaction.takenBy.toString()));
                 data.add(raw);
             }
             return data;
         }catch (Exception e){
-            System.out.println(e);
+            log.error("sellTransation get exception ",e);
             return null;
         }
     }
 
-    public static boolean createSellTable(){
+    private static boolean createSellTable(){
         StringBuilder query = new StringBuilder();
         query.append("CREATE TABLE IF NOT EXISTS sell ( ");
         query.append(sell.id);
@@ -397,12 +353,13 @@ public class DataHelper {
                 prep.setString(7, invoice.getAuthorityName());
                 prep.execute();
                 updateData("product", "stock", item.getProduct().getStock()-item.getQuantity(), item.getProduct().getId());
+                log.debug("Item id, that inserted to sell table : "+item.getProduct().getId());
             }
 
             conn.close();
             return true;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            log.error("Sell table insert problem: ", e);
             return false;
         }
     }
@@ -413,6 +370,7 @@ public class DataHelper {
         query.append("FROM sell, product ");
         query.append("WHERE sell.productID = product.id AND sell.customerId = ? ");
         query.append("ORDER BY sell.id ");
+        Connection conn = getConnection();
         try {
             PreparedStatement prep = conn.prepareStatement(query.toString());
             prep.setInt(1, customerId);
@@ -428,14 +386,16 @@ public class DataHelper {
                         res.getInt("productId"));
                 data.add(raw);
             }
+            prep.close();
+            conn.close();
             return data;
         }catch (Exception e){
-            System.out.println(e);
+            log.error(e);
             return null;
         }
     }
 
-    public static boolean createPurchaseTransactionTable(){
+    private static boolean createPurchaseTransactionTable(){
         StringBuilder query = new StringBuilder();
         query.append("CREATE TABLE IF NOT EXISTS purchaseTransaction ( ");
         query.append(purchaseTransaction.id);
@@ -475,35 +435,36 @@ public class DataHelper {
             conn.close();
             return true;
         }catch (Exception e){
-            System.out.println("PurchaseTransaction Insert "+e);
+            log.error("PurchaseTransaction Insert ",e);
             return false;
         }
 
     }
-    public static ObservableList<Transaction> getSellTransaction(int customerId){
+    public static ObservableList<Transaction> getPurchaseTransaction(int supplierId){
         ObservableList<Transaction> data = FXCollections.observableArrayList();
-        String query = String.format("SELECT * FROM sellTransaction WHERE customerId = %d ORDER BY id", customerId);
+        String query = String.format("SELECT * FROM purchaseTransaction WHERE supplierId = %d ORDER BY id", supplierId);
 
         try {
             ResultSet res = getConnection().createStatement().executeQuery(query);
             while (res.next()){
-                Transaction raw = new Transaction(res.getInt(sellTransaction.id.toString()),
-                        res.getInt(sellTransaction.customerId.toString()),
-                        res.getDouble(sellTransaction.total.toString()),
-                        res.getDouble(sellTransaction.paid.toString()),
-                        res.getString(sellTransaction.date.toString()),
-                        res.getString(sellTransaction.transactionId.toString()),
-                        res.getString(sellTransaction.takenBy.toString()));
+                Transaction raw = new Transaction(res.getInt(purchaseTransaction.id.toString()),
+                        res.getInt(purchaseTransaction.supplierId.toString()),
+                        res.getDouble(purchaseTransaction.total.toString()),
+                        res.getDouble(purchaseTransaction.paid.toString()),
+                        res.getString(purchaseTransaction.date.toString()),
+                        res.getString(purchaseTransaction.transactionId.toString()),
+                        res.getString(purchaseTransaction.takenBy.toString()));
                 data.add(raw);
             }
             return data;
         }catch (Exception e){
-            System.out.println(e);
+            log.error("purchaseTransaction get problem ", e);
             return null;
         }
     }
 
-    public static boolean createPurchaseTable(){
+
+    private static boolean createPurchaseTable(){
         StringBuilder query = new StringBuilder();
         query.append("CREATE TABLE IF NOT EXISTS purchase ( ");
         query.append(purchase.id);
@@ -552,7 +513,7 @@ public class DataHelper {
             conn.close();
             return true;
         } catch (Exception e) {
-            System.out.println("Purchase Insert "+e);
+            log.error("Purchase Insert "+e);
             return false;
         }
     }
@@ -564,6 +525,7 @@ public class DataHelper {
         query.append("WHERE purchase.productID = product.id AND purchase.supplierId = ? ");
         query.append("ORDER BY purchase.id ");
         try {
+            Connection conn = getConnection();
             PreparedStatement prep = conn.prepareStatement(query.toString());
             prep.setInt(1, supplierId);
             ResultSet res = prep.executeQuery();
@@ -578,9 +540,11 @@ public class DataHelper {
                         res.getInt("productId"));
                 data.add(raw);
             }
+            prep.close();
+            conn.close();
             return data;
         }catch (Exception e){
-            System.out.println(e);
+            log.error("PurchaseHistory get exception "+ e);
             return null;
         }
     }
@@ -614,16 +578,14 @@ public class DataHelper {
             con.close();
             return true;
         }catch (Exception e){
-            System.out.println("DataHelper:: "+e);
+            log.error("DataHelper:: query execute problem "+e);
             return false;
         }
     }
 
-    public static boolean createAllTables(){
-        log = LogManager.getLogger(DataHelper.class.getName());
-        log.debug("Table createe");
+    public static void createAllTables(){
 
-        return creatCustomerTable() &&
+        boolean created = creatCustomerTable() &&
                 createProductTable() &&
                 creatSupplierTable() &&
                 createSellTransactionTable() &&
@@ -631,6 +593,7 @@ public class DataHelper {
                 createPurchaseTransactionTable() &&
                 createPurchaseTable();
 
+        if(!created) log.error("Tables don't created successfully");
     }
 
     public static enum customer {

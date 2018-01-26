@@ -24,7 +24,6 @@ public class ModelStringConverter<T extends Model> extends StringConverter<T> {
 
     @Override
     public T fromString(String string) {
-
         for(T item: data){
             if(item.getName().equals(string)) {
                 return item;

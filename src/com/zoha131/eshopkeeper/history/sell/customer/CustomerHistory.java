@@ -1,5 +1,6 @@
 package com.zoha131.eshopkeeper.history.sell.customer;
 
+import com.zoha131.eshopkeeper.converter.CustomerConverter;
 import com.zoha131.eshopkeeper.converter.MyDateConverter;
 import com.zoha131.eshopkeeper.converter.ModelStringConverter;
 import com.zoha131.eshopkeeper.data_helper.DataHelper;
@@ -28,7 +29,7 @@ public class CustomerHistory {
 
     private ObservableList<Customer> dataCustomer;
     private ObservableList<String> dataCustomerName;
-    private ModelStringConverter<Customer> customerStringConverter;
+    private CustomerConverter customerStringConverter;
     AutoCompletionBinding<String> customerBinding;
 
     private ObservableList<Supplier> dataSupplier;
@@ -54,7 +55,7 @@ public class CustomerHistory {
 
             if(typeCombo.getSelectionModel().getSelectedItem().equals("Customer")){
                 dataCustomer = DataHelper.getCustomer();
-                customerStringConverter = new ModelStringConverter<>(dataCustomer);
+                customerStringConverter = new CustomerConverter(dataCustomer);
                 dataCustomerName = FXCollections.observableArrayList();
                 for(Customer cus: dataCustomer){
                     dataCustomerName.add(customerStringConverter.toString(cus));
@@ -65,9 +66,9 @@ public class CustomerHistory {
 
                 //binding the textview to make name searchable
                 customerBinding = TextFields.bindAutoCompletion(nameTxt, dataCustomerName);
-                customerBinding.setOnAutoCompleted(BindingEvent -> {
+                customerBinding.setOnAutoCompleted(bindingEvent -> {
                     //setting items to table
-                    Customer customer = customerStringConverter.fromString(BindingEvent.getCompletion());
+                    Customer customer = customerStringConverter.fromString(bindingEvent.getCompletion());
                     dataSellHistory = DataHelper.getSellHistory(customer.getId());
                     mainTbl.setItems(dataSellHistory);
                     updateSummery(dataSellHistory);
@@ -163,9 +164,11 @@ public class CustomerHistory {
 
         TableColumn<SellHistory, String> name = new TableColumn<>("Product");
         name.setCellValueFactory(new PropertyValueFactory<>("name"));
+        name.setMinWidth(200);
 
         TableColumn<SellHistory, String> company = new TableColumn<>("Company");
         company.setCellValueFactory(new PropertyValueFactory<>("company"));
+        company.setMinWidth(200);
 
         TableColumn<SellHistory, Double> rate = new TableColumn<>("Rate");
         rate.setCellValueFactory(new PropertyValueFactory<>("rate"));
