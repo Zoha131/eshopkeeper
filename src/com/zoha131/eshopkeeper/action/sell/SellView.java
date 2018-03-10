@@ -205,8 +205,8 @@ public class SellView {
             grdPan.setOpacity(.5);
             Toast.makeText(Main.getMainStage(), "Saving", 500, 200, 200);
 
-            //adding the data in another thread to have better UI experience
-            Thread t1 = new Thread(()-> {
+             //adding the data in another thread to have better UI experience
+            /*Thread t1 = new Thread(()-> {
                 boolean isSaved = DataHelper.insertSell(invoice) && DataHelper.insertSellTransaction(transaction);
                 boolean isUpdated = DataHelper.updateData("customer", "due", customer.getDue(), customer.getId());
                 if(isSaved && isUpdated){
@@ -222,7 +222,26 @@ public class SellView {
                     });
                 }
             });
-            t1.start();
+            t1.start();*/
+
+            //debug trying to solve sell save issue
+            boolean isSaved = DataHelper.insertSell(invoice) && DataHelper.insertSellTransaction(transaction);
+            boolean isUpdated = DataHelper.updateData("customer", "due", customer.getDue(), customer.getId());
+            if (isSaved && isUpdated) {
+
+                grdPan.setOpacity(1);
+                scrollPane.setVvalue(0);
+                log.debug("SellPurched Saved Successfully for the Customer: " + customer.getId());
+
+                //updating the data so that the stock in the ui would be updated.
+                //if I don't do this, then when the seller try to sell to multiple
+                //customer the stock in the ui don't tell the current stock
+                AddProductDialog.setDataProduct(DataHelper.getProduct());
+
+            }
+            //debug code end here
+
+            
             allClear();
         }));
         clrBtn.setOnAction(event -> {
